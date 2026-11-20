@@ -140,7 +140,7 @@ function MemeBlender.blend(player)
 	local label = (item.mut and (string.upper(item.mut) .. " ") or "") .. string.upper(entry.name)
 	PlayerData.alert(player, "🌀 BLENDED: " .. label .. "!", RarityConfig.list[tier + 1].color, 3)
 	PlayerData.feed("🌀 " .. player.DisplayName .. " blended 3 " .. rarityName .. " into " .. entry.name .. "!", MAGENTA)
-	PlayerData.push(player)
+	PlayerData.quest(player, 2)
 end
 
 function MemeBlender.init()

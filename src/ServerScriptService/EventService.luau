@@ -141,6 +141,9 @@ EVENTS.touchGrass = function()
 		task.wait(0.05)
 	end
 	wall:Destroy()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if not hit[player] then PlayerData.quest(player, 3) end
+	end
 end
 
 EVENTS.brainFreeze = function()
@@ -364,6 +367,10 @@ EVENTS.homeworkRaid = function()
 end
 
 local ORDER = { "touchGrass", "brainFreeze", "dopamineRush", "brainLag", "homeworkRaid" }
+local NEXT_LABEL = {
+	touchGrass = "🌱 TOUCH GRASS WAVE", brainFreeze = "🧊 BRAIN FREEZE", dopamineRush = "🌈 DOPAMINE RUSH",
+	brainLag = "⏳ BRAIN LAG", homeworkRaid = "📋 HOMEWORK RAID",
+}
 
 function EventService.start(name)
 	if EventService.current or not EVENTS[name] then return false end
@@ -380,15 +387,15 @@ end
 function EventService.init()
 	CarryService.onSlap = EventService.slapPixie
 	task.spawn(function()
-		local last
-		task.wait(45)
+		local last, wait = nil, 45
 		while true do
-			if not workspace:GetAttribute("EventsPaused") then
-				local name
-				repeat name = ORDER[rng:NextInteger(1, #ORDER)] until name ~= last
-				if EventService.start(name) then last = name end
-			end
-			task.wait(rng:NextInteger(70, 95))
+			local name
+			repeat name = ORDER[rng:NextInteger(1, #ORDER)] until name ~= last
+			workspace:SetAttribute("NextEvent", NEXT_LABEL[name])
+			workspace:SetAttribute("NextEventAt", workspace:GetServerTimeNow() + wait)
+			task.wait(wait)
+			if not workspace:GetAttribute("EventsPaused") and EventService.start(name) then last = name end
+			wait = rng:NextInteger(70, 95)
 		end
 	end)
 end

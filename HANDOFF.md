@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 11, 08:27 UTC. Studio place 115061750567662 saved to Roblox (version 49, no Edit changes in session 11). All src/ files match Studio (checksums).
+Last update: session 12, 12:23 UTC (a long gap in the session: Studio reconnected). Studio place 115061750567662 saved to Roblox (version 52). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -77,16 +77,26 @@ Last update: session 11, 08:27 UTC. Studio place 115061750567662 saved to Roblox
    - Capture recipe: `scratchpad/shot.sh` (lost after reboot): the 16:9 HUD band in a 1561x1080 capture is y 130..1008; `sips -c 878 1561 --cropOffset 130 0`, then `sips -z 720 1280 -s format jpeg -s formatOptions 56..80` until the file is <= 262144 bytes.
    - Capture tips: capture lag is 3-6 s, so moving events (Touch Grass wall) need a static clone. Rot climbs about 2/s with 20 items and Fully Rotted keeps re-firing its held alert: hide it from the Client datamodel (TextLabel with "INCOME x3", Visible false). `PlayerData.feed` lines through PlaytestControls replace spam in the feed. `PlayerData.push(p, {caught = {...}})` shows a catch card without a free slot. `debugSet {mindBlockReady = 0}` + `Invoke("CarryService", "mindBlock", p)` re-arms Mind Block.
 
+13. Session 12 plan PRIORITY NOW #3 and #4 A/B (synced, playtest OK, no errors). The 4 committed shots are now OUT OF DATE.
+   - #3 Brainpedia locked tiles: gray tile (95,95,104), model ImageColor3 (150,150,160) ImageTransparency 0.35, real name always, status line "NOT FOUND" or "+🧠X/s", 🔒 badge top right, ✅ for owned. Checked in a capture. Mutation dots skipped: `found` has no mutation data.
+   - #4 A tags: 10.4x4.2 x sqrt(scale) (1.4x), MaxDistance 60, rarity line small, name and "+🧠X/s" with stroke 3.5. `attachNameTag(..., stagger)`: LobeService passes `slot % 2 == 0`, the staggered tag sits 2.4 x sqrt(scale) higher.
+   - #4 B HUD: title 50 tall, "🧠 ROTTING BRAIN 🧠" big on the left, feature list small. Event line always on under the title: "NEXT EVENT: 🧊 BRAIN FREEZE · 0:24" (EventService picks the next event first and sets workspace attributes NextEvent, NextEventAt) or the live event. Stats and QUESTS panels on the left (0.24 wide). Feed: max 4 lines, own backing each, under the quests. Right menu of 7 colored buttons (SHOP, UPGRADES, BRAINPEDIA n/60, BLENDER, BUBBLES, BRAIN WASH, MOST ROTTED), 36 tall: upgrade/wash/pedia run the action, the rest show a hint alert. Catch card moved left of the menu (x 0.84).
+   - Quests: `PlayerData.QUESTS` (Steal 1 brainrot +500, Run 3 blends +5K, Survive Touch Grass +2K), `d.quests = {0,0,0}`, `PlayerData.quest(player, i)` from CarryService (steal placed), MemeBlender (blend done), EventService (Touch Grass end, players not hit). Snapshot field `quests`. `debugSet {quests = {1, 2, 0}}` works.
+   - Capture note: UI pixel offsets render about 1.7x in the 1561x1080 capture. With 7 menu buttons at 48 tall the menu hit the action bar; 36 fits (not yet seen in a capture after the change).
+
 ## Next step
 
-1. Screenshots are done. User task now possible: upload `screenshots/1-cover.jpg` as the Roblox thumbnail early (review takes about 10 minutes).
-2. Time left before the 11:30 feature freeze: optional polish only. Ideas: Focus Slap popup in shot 4 (plan wants it; not shown), pets (Tier 2, skip unless cheap). If the look changes, retake the affected shot with the recipe in item 12.
-3. At the end: game.rbxl (File, Download a Copy) and README final check (controls say L for Mind Block).
+TIMELINE: feature freeze (11:30) is past; shots were due 12:30, game.rbxl and thumbnail 12:45, submit by 13:45. No new features. The committed shots show the old HUD: retake the cover first (it is also the thumbnail), then 3 and 4, then 2, as time allows.
+
+1. Retake all 4 shots (plan #4 C, D, E). Same profile before each: `debugSet {found = 41 ids that include every id in the Lobe, lobeLevel = 4, rebirths = 2, cells = 4.8e6, quests = {1, 2, 0}}`. LobeService.add marks new ids as found, so set `found` AFTER filling the Lobe (session 12 test showed 47/60).
+2. Cover (D): the old cover camera (-22,31,-27) still gives tag soup (many big tags). Move the camera close to 6-8 brainrots (about 25-35 studs), player carrying one, catch card, quests and menu visible, a Lobe sign in frame. Maybe lower tag MaxDistance to 45. Check the crop at 768x480 and 253x158.
+3. Shot 2: grass wall fills half the frame. Shot 4: close camera on the thief, Mind Block glow, "STOLEN! RUN HOME!". Shot 3: Brainpedia at 41/60 (open: set the pedia frame Visible from the Client datamodel, then `PlayerData.push` from the Server so the tiles build).
+4. Commit the shots as one commit. Then: thumbnail upload (user), game.rbxl, README final check (L for Mind Block; mention quests, systems menu).
 
 ## Sync method (important)
 
 - No Rojo; Studio HTTP to GitHub is blocked (Assistant allowlist). Write the file in `src/` first, then push the SAME text with execute_luau (`m.Source = [==[...]==]`, split big files over several calls through a StringValue), and compare `#s` plus checksum `h = (h*31 + byte) % 2147483647` with `./check-sync.sh`.
-- Small changes: same plain find/replace on both sides (python locally, `string.find(s, old, 1, true)` in Studio), then compare checksums.
+- Small changes: same plain find/replace on both sides (python locally, the Studio MCP `multi_edit` tool with the same old/new strings in Edit), then compare checksums. The Studio id changes when Studio reconnects: call list_roblox_studios again.
 - New Scripts: push with `Disabled = true`, enable after all modules are in.
 - Rojo names: `X.luau` = ModuleScript, `X.server.luau` = Script, `X.client.luau` = LocalScript; folder = service.
 - Kit tests in Edit: clone the ReplicatedStorage modules into a ServerStorage folder, require, destroy the folder. Build test models at y=80 (the plaza floor sits above y=0 near z=150).

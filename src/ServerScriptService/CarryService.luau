@@ -93,6 +93,7 @@ local function place(player, c)
 		LobeService.finishSteal(c.from.lobe, c.from.slot)
 		PlayerData.alert(player, "✅ STOLE " .. string.upper(entry.name) .. "!", Color3.fromRGB(120, 255, 90), 2.5)
 		PlayerData.feed("🦹 " .. player.DisplayName .. " stole " .. entry.name .. " from " .. victimName .. "!", Color3.fromRGB(255, 120, 120))
+		PlayerData.quest(player, 1)
 		if victim then PlayerData.alert(victim, "😭 " .. player.DisplayName .. " STOLE YOUR " .. string.upper(entry.name), RED, 3) end
 	else
 		PlayerData.alert(player, "PLACED " .. string.upper(entry.name), Color3.fromRGB(120, 255, 90), 1.5)

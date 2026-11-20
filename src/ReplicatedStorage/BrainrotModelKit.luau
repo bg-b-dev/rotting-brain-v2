@@ -508,19 +508,20 @@ function BrainrotModelKit.build(entry, mutationName, level)
 end
 
 -- incomePerSecond is already multiplied by mutation and level; the tag only shows it.
-function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incomePerSecond)
+-- stagger lifts the tag one step so tags on neighbor podiums do not overlap.
+function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incomePerSecond, stagger)
 	local old = model:FindFirstChild("NameTagAnchor", true)
 	if old then old:Destroy() end
 	local rarity = RarityConfig.list[entry.tier]
 	local anchor = Instance.new("Attachment")
 	anchor.Name = "NameTagAnchor"
 	anchor.Parent = model.PrimaryPart
-	anchor.WorldPosition = model:GetPivot().Position + Vector3.new(0, (model:GetAttribute("TopHeight") or 4) + 1.7 * math.sqrt(rarity.scale) + 1, 0)
+	anchor.WorldPosition = model:GetPivot().Position + Vector3.new(0, (model:GetAttribute("TopHeight") or 4) + (stagger and 4.8 or 2.4) * math.sqrt(rarity.scale) + 1.2, 0)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "NameTag"
-	gui.Size = UDim2.new(7.4 * math.sqrt(rarity.scale), 0, 3 * math.sqrt(rarity.scale), 0)
+	gui.Size = UDim2.new(10.4 * math.sqrt(rarity.scale), 0, 4.2 * math.sqrt(rarity.scale), 0)
 	gui.LightInfluence = 0
-	gui.MaxDistance = 140
+	gui.MaxDistance = 60
 	gui.Parent = anchor
 	local backing = Instance.new("Frame")
 	backing.Size = UDim2.fromScale(1, 1)
@@ -533,9 +534,9 @@ function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incom
 	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	local mutation = mutationName and MutationConfig.byName[mutationName]
 	local lines = {
-		{ "Rarity", string.upper(rarity.name) .. (mutation and ("  ·  " .. string.upper(mutation.name)) or ""), Color3.new(1, 1, 1), 0.0, 0.26 },
-		{ "Title", entry.name, Color3.new(1, 1, 1), 0.25, 0.4 },
-		{ "Income", NumberFormat.cells(incomePerSecond) .. "/s  ·  Lv " .. (level or 1), entry.tier == 7 and Color3.fromRGB(140, 255, 90) or Color3.fromRGB(255, 240, 60), 0.66, 0.32 },
+		{ "Rarity", string.upper(rarity.name) .. (mutation and ("  ·  " .. string.upper(mutation.name)) or ""), Color3.new(1, 1, 1), 0.02, 0.2 },
+		{ "Title", entry.name, Color3.new(1, 1, 1), 0.22, 0.42 },
+		{ "Income", "+" .. NumberFormat.cells(incomePerSecond) .. "/s", entry.tier == 7 and Color3.fromRGB(140, 255, 90) or Color3.fromRGB(255, 240, 60), 0.64, 0.33 },
 	}
 	for _, line in ipairs(lines) do
 		local label = Instance.new("TextLabel")
@@ -548,7 +549,9 @@ function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incom
 		label.Text = line[2]
 		label.TextColor3 = line[3]
 		label.TextStrokeTransparency = 1
-		Instance.new("UIStroke", label).Thickness = 2.5
+		local textStroke = Instance.new("UIStroke", label)
+		textStroke.Thickness = line[1] == "Rarity" and 2 or 3.5
+		textStroke.Color = Color3.fromRGB(20, 10, 30)
 		label.Parent = backing
 	end
 	return gui

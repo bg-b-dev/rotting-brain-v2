@@ -48,7 +48,7 @@ local function render(lobe, slot)
 	local entry = Catalog.list[item.id]
 	local model = Kit.build(entry, item.mut, 1)
 	model:PivotTo(podiumCFrame(lobe.index, slot))
-	Kit.attachNameTag(model, entry, item.mut, 1, LobeService.itemIncome(item, lobe))
+	Kit.attachNameTag(model, entry, item.mut, 1, LobeService.itemIncome(item, lobe), slot % 2 == 0)
 	local prompt = Instance.new("ProximityPrompt")
 	prompt.Name = "StealPrompt"
 	prompt.ActionText = "Steal"

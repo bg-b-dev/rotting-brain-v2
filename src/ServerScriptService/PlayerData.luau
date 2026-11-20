@@ -6,6 +6,12 @@ local Remotes = require(game.ReplicatedStorage.Remotes)
 
 local PlayerData = {}
 local data = {}
+
+PlayerData.QUESTS = {
+	{ text = "Steal 1 brainrot", goal = 1, reward = 500 },
+	{ text = "Run 3 blends", goal = 3, reward = 5000 },
+	{ text = "Survive Touch Grass", goal = 1, reward = 2000 },
+}
 local store
 pcall(function() store = DataStoreService:GetDataStore("RottingBrain_v1") end)
 
@@ -13,7 +19,7 @@ local function default()
 	return {
 		cells = 60, rot = 0, rebirths = 0, lobeLevel = 1, stored = 0,
 		slots = {}, found = {}, income = 0, fullyRottedUntil = 0,
-		mindBlockUntil = 0, mindBlockReady = 0, slapReady = 0, lobe = 0,
+		mindBlockUntil = 0, mindBlockReady = 0, slapReady = 0, lobe = 0, quests = { 0, 0, 0 },
 	}
 end
 
@@ -77,10 +83,25 @@ function PlayerData.push(player, extra)
 		income = d.income, lobe = d.lobe, found = found,
 		fullyRotted = math.max(0, d.fullyRottedUntil - now),
 		mindBlock = math.max(0, d.mindBlockUntil - now), mindBlockCooldown = math.max(0, d.mindBlockReady - now),
-		slapCooldown = math.max(0, d.slapReady - now),
+		slapCooldown = math.max(0, d.slapReady - now), quests = {},
 	}
+	for i, q in ipairs(PlayerData.QUESTS) do
+		snapshot.quests[i] = { text = q.text, n = math.min(d.quests[i], q.goal), goal = q.goal, reward = q.reward }
+	end
 	if extra then for k, v in pairs(extra) do snapshot[k] = v end end
 	Remotes.State:FireClient(player, snapshot)
+end
+
+function PlayerData.quest(player, index)
+	local d = data[player]
+	local q = PlayerData.QUESTS[index]
+	if not d or d.quests[index] >= q.goal then return end
+	d.quests[index] += 1
+	if d.quests[index] == q.goal then
+		d.cells += q.reward
+		PlayerData.feed("📜 " .. player.DisplayName .. " finished quest: " .. q.text .. "!", Color3.fromRGB(255, 220, 60))
+	end
+	PlayerData.push(player)
 end
 
 function PlayerData.alert(player, text, color, seconds)

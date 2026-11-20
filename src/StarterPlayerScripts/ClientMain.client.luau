@@ -62,24 +62,26 @@ local function panel(parent, props)
 end
 
 -- Title banner
-local title = panel(root, { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 6), Size = UDim2.new(0.56, 0, 0, 34), BackgroundColor3 = Color3.fromRGB(255, 70, 170), BackgroundTransparency = 0.1 })
+local title = panel(root, { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 6), Size = UDim2.new(0.6, 0, 0, 50), BackgroundColor3 = Color3.fromRGB(255, 70, 170), BackgroundTransparency = 0.1 })
 stroke(title, Color3.fromRGB(255, 230, 80), 3)
-label(title, { Size = UDim2.new(1, -16, 1, -6), Position = UDim2.fromOffset(8, 3), Text = "🧠 ROTTING BRAIN 🧠 · 60 BRAINROTS · 8 MUTATIONS · STEAL · DEFENSE · REBIRTH" })
+label(title, { Size = UDim2.new(0.4, -8, 1, -6), Position = UDim2.fromOffset(8, 3), Text = "🧠 ROTTING BRAIN 🧠", TextColor3 = Color3.fromRGB(255, 240, 90) })
+label(title, { AnchorPoint = Vector2.new(1, 0.5), Size = UDim2.new(0.58, -8, 0.5, 0), Position = UDim2.new(1, -8, 0.5, 0), Text = "60 BRAINROTS · 8 MUTATIONS · STEAL · DEFENSE · REBIRTH" })
 
--- Event banner (server sets workspace attributes Event, EventColor, EventEnd)
-local eventBanner = panel(root, { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 46), Size = UDim2.new(0.42, 0, 0, 46), Visible = false, BackgroundTransparency = 0.05 })
+-- Event line: the next event and its countdown when idle, the live event when running.
+-- The server sets workspace attributes Event, EventColor, EventEnd, NextEvent and NextEventAt.
+local eventBanner = panel(root, { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 62), Size = UDim2.new(0.42, 0, 0, 42), BackgroundTransparency = 0.05 })
 stroke(eventBanner, WHITE, 3)
 local eventText = label(eventBanner, { Size = UDim2.new(1, -16, 1, -8), Position = UDim2.fromOffset(8, 4) })
 
 -- Stats panel
-local stats = panel(root, { Position = UDim2.new(0, 10, 0, 60), Size = UDim2.new(0.2, 0, 0, 118) })
+local stats = panel(root, { Position = UDim2.new(0, 10, 0, 62), Size = UDim2.new(0.24, 0, 0, 118), BackgroundTransparency = 0.1 })
 stroke(stats, Color3.fromRGB(255, 70, 170), 2)
 local cellsText = label(stats, { Position = UDim2.new(0, 10, 0, 6), Size = UDim2.new(1, -20, 0, 44), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 160, 220), Text = "🧠0" })
 local incomeText = label(stats, { Position = UDim2.new(0, 10, 0, 50), Size = UDim2.new(1, -20, 0, 26), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(120, 255, 120), Text = "+0/s" })
 local levelText = label(stats, { Position = UDim2.new(0, 10, 0, 80), Size = UDim2.new(1, -20, 0, 28), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = Color3.fromRGB(255, 220, 60), Text = "LOBE LV 1" })
 
 -- Rot meter
-local rotPanel = panel(root, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -10, 0, 60), Size = UDim2.new(0.22, 0, 0, 74) })
+local rotPanel = panel(root, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -10, 0, 62), Size = UDim2.new(0.2, 0, 0, 74), BackgroundTransparency = 0.1 })
 stroke(rotPanel, Color3.fromRGB(120, 255, 40), 2)
 local rotTitle = label(rotPanel, { Position = UDim2.new(0, 10, 0, 4), Size = UDim2.new(1, -20, 0, 28), Text = "🦠 BRAIN ROT 0%", TextColor3 = Color3.fromRGB(170, 255, 90) })
 local rotBack = new("Frame", { Position = UDim2.new(0, 10, 0, 38), Size = UDim2.new(1, -20, 0, 26), BackgroundColor3 = Color3.fromRGB(40, 20, 40), BorderSizePixel = 0 }, rotPanel)
@@ -93,7 +95,7 @@ local alert = label(root, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim
 new("UIStroke", { Thickness = 4, Color = Color3.new(0, 0, 0) }, alert)
 local alertScale = new("UIScale", {}, alert)
 local alertToken = 0
-Remotes.Alert.OnClientEvent:Connect(function(text, color, seconds)
+local function showAlert(text, color, seconds)
 	alertToken += 1
 	local token = alertToken
 	alert.Text, alert.TextColor3, alert.Visible = text, color or Color3.fromRGB(255, 60, 60), true
@@ -102,20 +104,41 @@ Remotes.Alert.OnClientEvent:Connect(function(text, color, seconds)
 	task.delay(seconds or 2.5, function()
 		if token == alertToken and not workspace:GetAttribute("HoldBanners") then alert.Visible = false end
 	end)
-end)
+end
+Remotes.Alert.OnClientEvent:Connect(showAlert)
 
 -- Feed
-local feed = panel(root, { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 10, 1, -110), Size = UDim2.new(0.26, 0, 0, 150), BackgroundTransparency = 0.35 })
-new("UIListLayout", { VerticalAlignment = Enum.VerticalAlignment.Bottom, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2) }, feed)
-new("UIPadding", { PaddingLeft = UDim.new(0, 8), PaddingRight = UDim.new(0, 8), PaddingBottom = UDim.new(0, 6), PaddingTop = UDim.new(0, 6) }, feed)
+-- Quests (server sends snapshot.quests = { {text, n, goal, reward} })
+local quests = panel(root, { Position = UDim2.new(0, 10, 0, 188), Size = UDim2.new(0.24, 0, 0, 128), BackgroundTransparency = 0.1 })
+stroke(quests, Color3.fromRGB(255, 220, 60), 2)
+label(quests, { Position = UDim2.new(0, 10, 0, 4), Size = UDim2.new(1, -20, 0, 26), Text = "📜 QUESTS", TextColor3 = Color3.fromRGB(255, 220, 60), TextXAlignment = Enum.TextXAlignment.Left })
+local questLines = {}
+for i = 1, 3 do
+	questLines[i] = label(quests, { Position = UDim2.new(0, 10, 0, 4 + i * 30), Size = UDim2.new(1, -20, 0, 26), Text = "", TextXAlignment = Enum.TextXAlignment.Left })
+end
+local function renderQuests(list)
+	for i, line in ipairs(questLines) do
+		local q = list[i]
+		if q then
+			local done = q.n >= q.goal
+			line.Text = (done and "✅ " or "• ") .. q.text .. ("  %d/%d"):format(q.n, q.goal) .. (done and "" or ("  +🧠" .. NumberFormat.short(q.reward)))
+			line.TextColor3 = done and Color3.fromRGB(120, 255, 120) or WHITE
+		end
+	end
+end
+
+-- Feed: 4 lines on the left under the quests, each on its own backing.
+local feed = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0, 324), Size = UDim2.new(0.3, 0, 0, 124) }, root)
+new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) }, feed)
 local feedOrder = 0
 Remotes.Feed.OnClientEvent:Connect(function(text, color)
 	feedOrder += 1
-	label(feed, { Size = UDim2.new(1, 0, 0, 22), Text = text, TextColor3 = color or WHITE, TextXAlignment = Enum.TextXAlignment.Left, LayoutOrder = feedOrder })
+	local back = panel(feed, { Size = UDim2.new(1, 0, 0, 27), BackgroundTransparency = 0.15, LayoutOrder = feedOrder })
+	label(back, { Position = UDim2.fromOffset(8, 2), Size = UDim2.new(1, -16, 1, -4), Text = text, TextColor3 = color or WHITE, TextXAlignment = Enum.TextXAlignment.Left })
 	local lines = {}
-	for _, child in ipairs(feed:GetChildren()) do if child:IsA("TextLabel") then table.insert(lines, child) end end
+	for _, child in ipairs(feed:GetChildren()) do if child:IsA("Frame") then table.insert(lines, child) end end
 	table.sort(lines, function(a, b) return a.LayoutOrder < b.LayoutOrder end)
-	for i = 1, #lines - 6 do lines[i]:Destroy() end
+	for i = 1, #lines - 4 do lines[i]:Destroy() end
 end)
 
 -- Brainpedia
@@ -149,10 +172,11 @@ local function buildTile(entry)
 	local rarity = RarityConfig.byName[entry.rarity]
 	local tile = new("Frame", { BackgroundColor3 = rarity.color, BorderSizePixel = 0, LayoutOrder = entry.id, ZIndex = 6 }, grid)
 	corner(tile, 8)
-	local vp = modelView(tile, entry, nil, { Size = UDim2.fromScale(1, 0.72), ZIndex = 7 })
-	local name = label(tile, { Position = UDim2.fromScale(0.03, 0.72), Size = UDim2.fromScale(0.94, 0.26), ZIndex = 8 })
+	local vp = modelView(tile, entry, nil, { Size = UDim2.fromScale(1, 0.64), ZIndex = 7 })
+	local name = label(tile, { Position = UDim2.fromScale(0.03, 0.63), Size = UDim2.fromScale(0.94, 0.2), Text = entry.name, ZIndex = 8 })
+	local status = label(tile, { Position = UDim2.fromScale(0.03, 0.83), Size = UDim2.fromScale(0.94, 0.15), ZIndex = 8 })
 	local mark = label(tile, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -2, 0, 2), Size = UDim2.fromScale(0.3, 0.22), ZIndex = 8 })
-	tiles[entry.id] = { tile = tile, vp = vp, name = name, mark = mark, color = rarity.color, entry = entry }
+	tiles[entry.id] = { tile = tile, vp = vp, name = name, status = status, mark = mark, color = rarity.color, entry = entry }
 end
 
 local foundSet, foundCount = {}, 0
@@ -160,17 +184,19 @@ local function refreshPedia()
 	if not next(tiles) then for _, entry in ipairs(Catalog.list) do buildTile(entry) end end
 	for id, t in pairs(tiles) do
 		local owned = foundSet[id]
-		t.tile.BackgroundColor3 = owned and t.color or Color3.fromRGB(60, 60, 66)
-		t.vp.ImageColor3 = owned and WHITE or Color3.fromRGB(25, 25, 30)
-		t.name.Text = owned and t.entry.name or "🔒 NOT FOUND"
-		t.name.TextColor3 = owned and WHITE or Color3.fromRGB(170, 170, 175)
-		t.mark.Text = owned and "✅" or ""
+		t.tile.BackgroundColor3 = owned and t.color or Color3.fromRGB(95, 95, 104)
+		t.vp.ImageColor3 = owned and WHITE or Color3.fromRGB(150, 150, 160)
+		t.vp.ImageTransparency = owned and 0 or 0.35
+		t.name.TextColor3 = owned and WHITE or Color3.fromRGB(200, 200, 208)
+		t.status.Text = owned and ("+🧠" .. NumberFormat.short(t.entry.income) .. "/s") or "NOT FOUND"
+		t.status.TextColor3 = owned and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(175, 175, 182)
+		t.mark.Text = owned and "✅" or "🔒"
 	end
 	pediaTitle.Text = ("📖 BRAINPEDIA · FOUND %d/60"):format(foundCount)
 end
 
 -- Catch card: the first time a brainrot lands in the Lobe (server sends snapshot.caught).
-local card = panel(root, { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 10), Size = UDim2.new(0.2, 0, 0.42, 0), Visible = false, BackgroundTransparency = 0.05, ZIndex = 3 })
+local card = panel(root, { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(0.84, -16, 0.5, 10), Size = UDim2.new(0.2, 0, 0.42, 0), Visible = false, BackgroundTransparency = 0.05, ZIndex = 3 })
 local cardStroke = new("UIStroke", { Thickness = 4, Color = WHITE }, card)
 local cardScale = new("UIScale", {}, card)
 local cardToken = 0
@@ -233,6 +259,27 @@ actionButton(5, "R", "Brain Wash", Color3.fromRGB(40, 150, 230), function() send
 actionButton(6, "B", "Brainpedia", Color3.fromRGB(140, 70, 230), togglePedia)
 buttons.E.status.Text = "HOLD NEAR"
 
+-- Systems menu on the right edge: each button is the bar action or a hint to the place in the plaza.
+local menu = new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -10, 0, 144), Size = UDim2.new(0.15, 0, 0, 276) }, root)
+new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) }, menu)
+local function hint(text) return function() showAlert(text, Color3.fromRGB(255, 230, 80), 2.5) end end
+local menuLabels = {}
+for i, m in ipairs({
+	{ "🛒 SHOP", Color3.fromRGB(40, 170, 90), hint("🛒 BUY BRAINROTS ON THE SYNAPSE BELT") },
+	{ "⬆ UPGRADES", Color3.fromRGB(220, 160, 20), function() send("upgrade") end },
+	{ "📖 BRAINPEDIA", Color3.fromRGB(140, 70, 230), togglePedia },
+	{ "🌀 BLENDER", Color3.fromRGB(230, 60, 160), hint("🌀 MEME BLENDER: PLAZA, RIGHT SIDE") },
+	{ "💭 BUBBLES", Color3.fromRGB(60, 170, 230), hint("💭 THOUGHT BUBBLES: PLAZA, LEFT SIDE") },
+	{ "🧼 BRAIN WASH", Color3.fromRGB(40, 120, 220), function() send("brainWash") end },
+	{ "🏆 MOST ROTTED", Color3.fromRGB(240, 120, 30), hint("🏆 MOST ROTTED BOARD: PLAZA, BACK") },
+}) do
+	local b = new("TextButton", { Size = UDim2.new(1, 0, 0, 36), BackgroundColor3 = m[2], AutoButtonColor = true, Text = "", LayoutOrder = i }, menu)
+	corner(b, 12)
+	stroke(b, WHITE, 2.5)
+	menuLabels[i] = label(b, { Position = UDim2.fromOffset(8, 4), Size = UDim2.new(1, -16, 1, -8), Text = m[1], TextStrokeTransparency = 0 })
+	b.Activated:Connect(m[3])
+end
+
 local KEYS = { [Enum.KeyCode.F] = "slap", [Enum.KeyCode.L] = "mindBlock", [Enum.KeyCode.U] = "upgrade", [Enum.KeyCode.R] = "brainWash" }
 UserInputService.InputBegan:Connect(function(input, processed)
 	if processed then return end
@@ -252,6 +299,7 @@ Remotes.State.OnClientEvent:Connect(function(snapshot)
 		if timers[k] ~= nil then timers[k] = v else state[k] = v end
 	end
 	if snapshot.caught then showCard(snapshot.caught) end
+	if snapshot.quests then renderQuests(snapshot.quests) end
 	if snapshot.found then
 		foundSet, foundCount = {}, #snapshot.found
 		for _, id in ipairs(snapshot.found) do foundSet[id] = true end
@@ -281,14 +329,18 @@ RunService.Heartbeat:Connect(function(dt)
 	setReady("U", state.cells >= state.upgradeCost, NumberFormat.cells(state.upgradeCost))
 	setReady("R", state.cells >= state.brainWashCost, NumberFormat.cells(state.brainWashCost))
 	buttons.B.status.Text = foundCount .. "/60"
+	menuLabels[3].Text = "📖 BRAINPEDIA " .. foundCount .. "/60"
 
 	local event = workspace:GetAttribute("Event")
-	eventBanner.Visible = event ~= nil and event ~= ""
-	if eventBanner.Visible then
+	if event ~= nil and event ~= "" then
 		local left = math.max(0, (workspace:GetAttribute("EventEnd") or 0) - workspace:GetServerTimeNow())
 		eventText.Text = event .. ("  ·  %ds"):format(math.ceil(left))
 		eventColor = workspace:GetAttribute("EventColor") or eventColor
 		eventBanner.BackgroundColor3 = eventColor
+	else
+		local secs = math.ceil(math.max(0, (workspace:GetAttribute("NextEventAt") or 0) - workspace:GetServerTimeNow()))
+		eventText.Text = ("NEXT EVENT: %s · %d:%02d"):format(workspace:GetAttribute("NextEvent") or "SOON", secs // 60, secs % 60)
+		eventBanner.BackgroundColor3 = Color3.fromRGB(20, 8, 30)
 	end
 end)
 
