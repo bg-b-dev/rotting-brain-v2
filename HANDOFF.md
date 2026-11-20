@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 7, 07:53 UTC. Studio place 115061750567662 saved to Roblox (version 46). All src/ files match Studio (checksums).
+Last update: session 8, 08:20 UTC. Studio place 115061750567662 saved to Roblox (version 47). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -49,9 +49,17 @@ Last update: session 7, 07:53 UTC. Studio place 115061750567662 saved to Roblox 
    - Checked by code: the Mind Block field sizes from LOBE_SIZE and h2; the Touch Grass wall (34 tall, 400 long, x ±200) covers the 48-wide Lobes and floor 2 at 18. Visual check still in the shot 2 setup.
    - README: Most Rotted line.
 
+9. Session 8 bright daytime look (plan "PRIORITY NOW #2", synced, world rebuilt in Edit, playtest OK, no errors):
+   - Lighting: ClockTime 14, Brightness 2.2, ExposureCompensation -0.2, Ambient (120,95,140), OutdoorAmbient (160,130,175), Sky (no sun/stars), Atmosphere Density 0.15 Color (255,190,230) Decay (255,150,210) Haze 0.2, Bloom 0.4/24/2.4, grade Saturation 0.45 Contrast 0.2. The plan's values (Brightness 3, Exposure +0.3, Haze 0.5) blew the pink floor to white: do not use them.
+   - Floor bubblegum (255,150,200), FoldRidge (230,90,160), skull wall (210,180,255), belt white, Lobe floors (250,240,252), Lobe back wall = accent lerp lavender 0.6.
+   - Signs: Lobe signs, kiosk boards, Meme Lobe sign and ROTTING BRAIN frame are solid color boards with white LuckiestGuy text and a dark stroke.
+   - Name tags: solid rarity-colored box, dark border 3, white rarity line and name, yellow income line (green on Brainrot God), UIStroke 2.5 on every line, size 7.4x3 x sqrt(scale).
+   - Checked in play: Brain Freeze reads pale cyan, Touch Grass wall bright green on pink.
+   - Known look issue (old): the Meme Lobe folds stick out past the ball (Ball shape uses the smallest axis), so it reads like a cage. Optional fix: ball size uniform 60.
+
 ## Next step
 
-1. Vibe pass and Most Rotted board are done; do not redo them. Optional Tier 2 left: Thought Bubbles (design 10.5, needs a shop: keep it small, e.g. a plaza kiosk and 2 pads per Lobe) or the Productivity Pixie raid. Set rot right before captures (lesson 20). Shot 2 can show the Most Rotted board.
+1. Vibe pass, Most Rotted board and the bright look are done; do not redo them. Optional Tier 2 left: Thought Bubbles (design 10.5, needs a shop: keep it small, e.g. a plaza kiosk and 2 pads per Lobe) or the Productivity Pixie raid. Set rot right before captures (lesson 20). Shot 2 can show the Most Rotted board.
 2. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan; shot 1 can now show a held catch card), then game.rbxl, thumbnail, README.
 3. For shot 1 the Touch Grass wall was not checked in a capture after the color change: check it in the shot 2 setup.
 

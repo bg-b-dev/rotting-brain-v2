@@ -518,23 +518,24 @@ function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incom
 	anchor.WorldPosition = model:GetPivot().Position + Vector3.new(0, (model:GetAttribute("TopHeight") or 4) + 1.7 * math.sqrt(rarity.scale) + 1, 0)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "NameTag"
-	gui.Size = UDim2.new(6.8 * math.sqrt(rarity.scale), 0, 2.7 * math.sqrt(rarity.scale), 0)
+	gui.Size = UDim2.new(7.4 * math.sqrt(rarity.scale), 0, 3 * math.sqrt(rarity.scale), 0)
 	gui.LightInfluence = 0
 	gui.MaxDistance = 140
 	gui.Parent = anchor
 	local backing = Instance.new("Frame")
 	backing.Size = UDim2.fromScale(1, 1)
-	backing.BackgroundColor3 = Color3.fromRGB(15, 5, 20)
-	backing.BackgroundTransparency = 0.35
+	backing.BackgroundColor3 = rarity.color
+	backing.BackgroundTransparency = 0
 	backing.Parent = gui
 	Instance.new("UICorner", backing).CornerRadius = UDim.new(0.15, 0)
 	local stroke = Instance.new("UIStroke", backing)
-	stroke.Color, stroke.Thickness = rarity.color, 2
+	stroke.Color, stroke.Thickness = Color3.fromRGB(20, 10, 30), 3
+	stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
 	local mutation = mutationName and MutationConfig.byName[mutationName]
 	local lines = {
-		{ "Rarity", string.upper(rarity.name) .. (mutation and ("  ·  " .. string.upper(mutation.name)) or ""), mutation and mutation.color or rarity.color, 0.0, 0.26 },
+		{ "Rarity", string.upper(rarity.name) .. (mutation and ("  ·  " .. string.upper(mutation.name)) or ""), Color3.new(1, 1, 1), 0.0, 0.26 },
 		{ "Title", entry.name, Color3.new(1, 1, 1), 0.25, 0.4 },
-		{ "Income", NumberFormat.cells(incomePerSecond) .. "/s  ·  Lv " .. (level or 1), Color3.fromRGB(120, 255, 90), 0.66, 0.32 },
+		{ "Income", NumberFormat.cells(incomePerSecond) .. "/s  ·  Lv " .. (level or 1), entry.tier == 7 and Color3.fromRGB(140, 255, 90) or Color3.fromRGB(255, 240, 60), 0.66, 0.32 },
 	}
 	for _, line in ipairs(lines) do
 		local label = Instance.new("TextLabel")
@@ -546,7 +547,8 @@ function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incom
 		label.TextScaled = true
 		label.Text = line[2]
 		label.TextColor3 = line[3]
-		label.TextStrokeTransparency = 0.2
+		label.TextStrokeTransparency = 1
+		Instance.new("UIStroke", label).Thickness = 2.5
 		label.Parent = backing
 	end
 	return gui
