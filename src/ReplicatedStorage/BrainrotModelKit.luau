@@ -262,6 +262,7 @@ PROPS.clock = function(c)
 	floatText(c.body, "TIC TAC", Color3.fromRGB(255, 230, 60), c.top + 0.9, 2)
 end
 PROPS.orange = function(c) c.add("ball", "Orange", Vector3.new(1, 1, 1), Vector3.new(0, c.top + 0.3, 0), Color3.fromRGB(255, 140, 20)) end
+PROPS.leaf = function(c) c.add("ball", "Leaf", Vector3.new(0.3, 1.6, 0.8), CFrame.new(c.bx + 0.3, 0, -0.5) * CFrame.Angles(0, 0, -0.4), Color3.fromRGB(70, 170, 90)) end
 PROPS.clawsUp = function(c) for _, s in ipairs({ -1, 1 }) do c.add("ball", "RaisedClaw", Vector3.new(0.9, 1.4, 0.8), Vector3.new(s * (c.bx + 0.5), c.by + 0.4, -0.3), c.bodyColor) end end
 PROPS.sparks = function(c) for i = 1, 4 do sparkle(c.add("block", "Spark", Vector3.new(0.2, 0.8, 0.2), CFrame.new(math.cos(i * 1.6) * (c.bx + 0.4), c.by * 0.6, math.sin(i * 1.6) * (c.bz + 0.4)) * CFrame.Angles(0, 0, 0.7), Color3.fromRGB(255, 240, 60), NEON), Color3.fromRGB(255, 240, 60)) end end
 PROPS.lightning = function(c) for i = 1, 3 do c.add("block", "Bolt", Vector3.new(0.3, 1.2, 0.2), CFrame.new(c.bx * 0.4 * (i - 2), c.top + 0.6 + (i % 2) * 0.5, 0) * CFrame.Angles(0, 0, 0.6 * ((i % 2) * 2 - 1)), Color3.fromRGB(255, 240, 60), NEON) end end
