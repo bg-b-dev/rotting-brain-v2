@@ -1,21 +1,38 @@
-# roblox-brainrot-01 starter
+# ROTTING BRAIN 🧠 Touch Grass Panic
 
-A working entry for make.fun's "Make the best AI Roblox brainrot game" bounty (roblox-brainrot-01), laid out as your
-repository: a Rojo project whose game is a grey square that moves with the arrow keys. It is a starting point, not a
-winner, and not yet the 3D game the bounty asks for: its square is drawn on the screen, not in Roblox's 3D world.
+[![make.fun · roblox-brainrot-01](https://make.fun/badge/roblox-brainrot-01.svg)](https://make.fun/bounty/roblox-brainrot-01)
+[![rank](https://make.fun/badge/roblox-brainrot-01/bg-b-dev/rotting-brain-v2/rank.svg)](https://make.fun/bounty/roblox-brainrot-01/leaderboard)
+[![reward](https://make.fun/badge/roblox-brainrot-01/bg-b-dev/rotting-brain-v2/reward.svg)](https://make.fun/bounty/roblox-brainrot-01)
 
-- `main.ts` (Node 22, standard library only) hands the game in: it copies `game.rbxl`, `src/`, `screenshots/` and
-  `PLAY.json` to `/output`, leaving out every name that starts with a dot (such as `.gitkeep` or `.DS_Store`, which
-  fail an entry), and writes `/output/dossier.json` with `vendor/makefun-roblox.ts`, the kit's copy, unchanged.
-- `game.rbxl` is the place Rojo builds from `src/` and `default.project.json`; `screenshots/` holds three captures of
-  it; `PLAY.json` names no place yet, so the gate refuses the starter as it stands until it names your published one.
-- One of your screenshots must also be your game's first thumbnail on Roblox: the same picture, uploaded on the
-  Creator Dashboard with your game's icon.
-- `TOUR.json` is an example of the optional tour: for each screenshot, the keys that bring the game to that screen.
+My entry for the make.fun bounty [roblox-brainrot-01](https://make.fun/bounty/roblox-brainrot-01).
 
-Run it as the grader does, writing `out/` in place of `/output`:
+Play it on Roblox: https://www.roblox.com/games/115061750567662
 
-    mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
+## The game
 
-The rules are on the bounty's page (/bounty/roblox-brainrot-01) and in the kit's RULES.txt,
-which gives every command in order (Before you submit, then Enter).
+The map is the inside of the giant brain of a kid who scrolls at 3 AM. Memes fire out of the Meme Lobe onto the
+Synapse Belt. You buy these brainrots with Brain Cells (🧠), keep them on your Lobe, and each one earns Brain Cells
+every second. Rival kids sneak into your Lobe to steal them, and you sneak into theirs.
+
+- 60 brainrots in 8 rarities, from Common to Brainrot God, each with a big name tag and income rate.
+- 8 mutations that multiply income.
+- Steal from rival Lobes, block thieves with Mind Block, knock them back with Focus Slap.
+- Events: the Touch Grass Wave sweeps the brain, Brain Freeze stops the belt, and more.
+- The Brain Rot meter fills as you play. At 100% you are Fully Rotted and earn x3.
+- Brainpedia: all 60 brainrots on one board. Brain Wash to rebirth for a permanent boost.
+
+## Controls
+
+| Key | Action |
+|---|---|
+| E | Buy, pick up, place, collect |
+| Q | Mind Block (shield your Lobe) |
+| F | Focus Slap |
+| B | Brainpedia |
+
+## Repository
+
+- `src/`: the Luau scripts in the place (Rojo layout).
+- `game.rbxl`: the place, saved from Roblox Studio.
+- `main.ts`: hands the entry in and writes `dossier.json`.
+- `screenshots/`: the captures the judge sees.
