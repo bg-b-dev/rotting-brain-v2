@@ -17,8 +17,9 @@ local SynapseBelt = load("SynapseBelt")
 local CarryService = load("CarryService")
 local EventService = load("EventService")
 local MemeBlender = load("MemeBlender")
+local MostRotted = load("MostRotted")
 
-for name, service in pairs({ LobeService = LobeService, SynapseBelt = SynapseBelt, CarryService = CarryService, EventService = EventService, MemeBlender = MemeBlender }) do
+for name, service in pairs({ LobeService = LobeService, SynapseBelt = SynapseBelt, CarryService = CarryService, EventService = EventService, MemeBlender = MemeBlender, MostRotted = MostRotted }) do
 	local ok, err = pcall(service.init)
 	if not ok then warn("ServerMain: init " .. name .. " failed: " .. tostring(err)) end
 end
@@ -108,7 +109,7 @@ end)
 if RunService:IsStudio() then
 	local hook = Instance.new("BindableFunction")
 	hook.Name = "PlaytestControls"
-	local services = { PlayerData = PlayerData, LobeService = LobeService, SynapseBelt = SynapseBelt, CarryService = CarryService, EventService = EventService, MemeBlender = MemeBlender }
+	local services = { PlayerData = PlayerData, LobeService = LobeService, SynapseBelt = SynapseBelt, CarryService = CarryService, EventService = EventService, MemeBlender = MemeBlender, MostRotted = MostRotted }
 	hook.OnInvoke = function(service, key, ...)
 		local value = services[service] and services[service][key]
 		if type(value) == "function" then return value(...) end

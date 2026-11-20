@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 6, 07:48 UTC. Studio place 115061750567662 saved to Roblox (version 45). All src/ files match Studio (checksums).
+Last update: session 7, 08:05 UTC. Studio place 115061750567662 saved to Roblox (session 7 save). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -42,9 +42,16 @@ Last update: session 6, 07:48 UTC. Studio place 115061750567662 saved to Roblox 
    - Item 5 lighting: Atmosphere Color (90,30,140), Decay (40,15,70), Ambient (60,40,80), OutdoorAmbient (95,80,130).
    - Acceptance capture from (-22,36,30) looking at (-72,4,-42): characters lead, 5+ hues, OHIO / BRAIN ROT 100% / BOMBARDIRO readable, loop center filled.
 
+8. Session 7 Most Rotted board (Tier 2, synced, playtest OK, no errors):
+   - `MostRotted.luau` (new, init from ServerMain, in PlaytestControls): builds `workspace.MostRottedBoard` at runtime at PLAZA_CENTER + (34, 0, 30), faces the plaza center. SurfaceGui: "🏆 MOST ROTTED 🏆", two columns "🧠 BRAIN CELLS" and "📖 BRAINPEDIA", 8 rows (all Lobe owners), players in gold. Refresh every 2 s.
+   - NPC kids get fixed base stats that grow with `time()` (server time; `os.clock()` is Studio uptime and blew up the numbers).
+   - Good capture: camera (20, 15, 121) look at (34, 14, 142). A far capture right after play start showed the board blank once; capture again.
+   - Checked by code: the Mind Block field sizes from LOBE_SIZE and h2; the Touch Grass wall (34 tall, 400 long, x ±200) covers the 48-wide Lobes and floor 2 at 18. Visual check still in the shot 2 setup.
+   - README: Most Rotted line.
+
 ## Next step
 
-1. Vibe pass is done; do not redo it. Optional Tier 2: Thought Bubbles or Most Rotted board (plan Scope tiers). Set rot right before captures (lesson 20). Check the Touch Grass wall and the Mind Block field still fit the wider Lobes (48) and the higher floor 2 (18).
+1. Vibe pass and Most Rotted board are done; do not redo them. Optional Tier 2 left: Thought Bubbles (design 10.5, needs a shop: keep it small, e.g. a plaza kiosk and 2 pads per Lobe) or the Productivity Pixie raid. Set rot right before captures (lesson 20). Shot 2 can show the Most Rotted board.
 2. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan; shot 1 can now show a held catch card), then game.rbxl, thumbnail, README.
 3. For shot 1 the Touch Grass wall was not checked in a capture after the color change: check it in the shot 2 setup.
 
