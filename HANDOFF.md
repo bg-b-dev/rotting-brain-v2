@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 10, 08:17 UTC. Studio place 115061750567662 saved to Roblox (version 49). All src/ files match Studio (checksums).
+Last update: session 11, 08:27 UTC. Studio place 115061750567662 saved to Roblox (version 49, no Edit changes in session 11). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -69,11 +69,19 @@ Last update: session 10, 08:17 UTC. Studio place 115061750567662 saved to Roblox
    - Test: `Invoke("ThoughtBubbles", "speed", 10)` makes timers 10x faster; `Invoke("ThoughtBubbles", "buy", player, 1..3)` returns the pad or nil. Good captures: Lobe 2 pads from (-22, 16, -45) look at (-56, 7, -45); shop from (-34, 12, 106) look at (-56, 6, 106).
    - README feature line added.
 
+12. Session 11 screenshots (all 4 done, 1280x720 JPEG, each under 256 KiB, TOUR.json lists them, starter PNGs removed):
+   - `1-cover.jpg`: player Lobe 2 full (19 mutated brainrots + Dopamina Divina), Gold and Galaxy bubbles with countdowns, catch card "Gallina Aura Infinita", Fully Rotted x3, Lobe LV 4. Camera (-22, 31, -27) look at (-72, 9, -48).
+   - `2-touch-grass.jpg`: static clone of the wall ("GrassStill" at x -12), event attributes set by hand, held alert. Camera (46, 26, 96) look at (-8, 4, 60), player at (6, 4, 70).
+   - `3-brainpedia.jpg`: `debugSet found` 41 ids, pedia frame set Visible from the Client datamodel.
+   - `4-steal.jpg`: stole Unicorno Neuronico (Mythic) from Lobe 4 with `StealPrompt:InputHoldBegin()`, Mind Block on the home Lobe (pink field), held "STOLEN! RUN HOME!". Belt items moved to ServerStorage for the shot (restored after). Camera (-18, 15, 18) look at (-50, 9, -20), player at (-41, 4, -6).
+   - Capture recipe: `scratchpad/shot.sh` (lost after reboot): the 16:9 HUD band in a 1561x1080 capture is y 130..1008; `sips -c 878 1561 --cropOffset 130 0`, then `sips -z 720 1280 -s format jpeg -s formatOptions 56..80` until the file is <= 262144 bytes.
+   - Capture tips: capture lag is 3-6 s, so moving events (Touch Grass wall) need a static clone. Rot climbs about 2/s with 20 items and Fully Rotted keeps re-firing its held alert: hide it from the Client datamodel (TextLabel with "INCOME x3", Visible false). `PlayerData.feed` lines through PlaytestControls replace spam in the feed. `PlayerData.push(p, {caught = {...}})` shows a catch card without a free slot. `debugSet {mindBlockReady = 0}` + `Invoke("CarryService", "mindBlock", p)` re-arms Mind Block.
+
 ## Next step
 
-1. Tier 2 left: pets only (skip unless it is cheap). Better use of time now: start the screenshots early (plan's Screenshot plan). Shot 1 can show a held catch card and a bubble pad; shot 4 (steal) could show a pixie raid instead of a rival thief; shot 2 can show the Most Rotted board. Set rot right before captures (lesson 20).
-2. Feature freeze 11:30, screenshots by 12:30, then game.rbxl, thumbnail, README.
-3. For shot 1 the Touch Grass wall was not checked in a capture after the color change: check it in the shot 2 setup.
+1. Screenshots are done. User task now possible: upload `screenshots/1-cover.jpg` as the Roblox thumbnail early (review takes about 10 minutes).
+2. Time left before the 11:30 feature freeze: optional polish only. Ideas: Focus Slap popup in shot 4 (plan wants it; not shown), pets (Tier 2, skip unless cheap). If the look changes, retake the affected shot with the recipe in item 12.
+3. At the end: game.rbxl (File, Download a Copy) and README final check (controls say L for Mind Block).
 
 ## Sync method (important)
 
