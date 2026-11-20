@@ -224,8 +224,7 @@ local eventColor = Color3.fromRGB(255, 70, 170)
 RunService.Heartbeat:Connect(function(dt)
 	for k, v in pairs(timers) do timers[k] = math.max(0, v - dt) end
 	cellsText.Text = NumberFormat.cells(state.cells)
-	local mult = timers.fullyRotted > 0 and 3 or 1
-	incomeText.Text = "+" .. NumberFormat.short(state.income * mult) .. "/s" .. (mult > 1 and "  x3!" or "")
+	incomeText.Text = "+" .. NumberFormat.short(state.income) .. "/s" .. (timers.fullyRotted > 0 and "  x3!" or "")
 	levelText.Text = "LOBE LV " .. state.lobeLevel .. (state.rebirths > 0 and ("  ·  🫧" .. state.rebirths) or "")
 	if timers.fullyRotted > 0 then
 		rotTitle.Text = ("☣️ FULLY ROTTED x3 · %ds"):format(math.ceil(timers.fullyRotted))

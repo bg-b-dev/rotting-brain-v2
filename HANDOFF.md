@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 2, 06:56 UTC. Studio place 115061750567662 saved to Roblox (version 39). All src/ files match Studio (checksums).
+Last update: session 3, 07:15 UTC. Studio place 115061750567662 saved to Roblox (version 41). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -14,11 +14,17 @@ Last update: session 2, 06:56 UTC. Studio place 115061750567662 saved to Roblox 
    - `CarryService.luau`: carry over head (weld), place on entering own HomeZone, steal from rival/NPC Lobes ("STOLEN! RUN HOME!"), Focus Slap (range 10, cooldown 3 s, drops a stolen brainrot), Mind Block (10 s, cooldown 35 s, field transparency 0.68, pushes intruders out).
    - `ServerMain.server.luau`: pcall per require and init, actions `slap`, `mindBlock`, `upgrade` (cost 150 x 3.2^(lv-1), +25 % income per level), `brainWash` (cost 250K x 6^rebirths, +50 % income per rebirth), `collect`. Studio-only `ServerStorage.PlaytestControls` BindableFunction: `Invoke(serviceName, key, ...)` calls `service[key](...)`, or sets a field when args are given.
 
+4. Session 3 client and events (all synced, playtest OK, no errors):
+   - `StarterPlayerScripts/ClientMain.client.luau`: title banner, stats (cells, income, Lobe LV, rebirths), rot meter (Fully Rotted x3 text), alert banner (Alert remote, pop tween), feed (6 lines, dark backing), action bar E/F/L/U/R/B with live status and gray when not ready, Brainpedia 12x5 with ViewportFrame models (camera from `TopHeight`), "FOUND n/60", ✅ / 🔒 NOT FOUND. Hides StealPrompt on models whose `OwnerId` is the local player. Server income already has x3 in it, so the HUD does not multiply.
+   - Capture switches (workspace attributes): `HudBand16x9` (Studio only, 16:9 HUD band), `HoldBanners` (alert stays), `EventsPaused` (scheduler skips).
+   - `PlayerData.debugSet(player, {found = {ids}, cells=, rot=, ...})`: test setter, because BindableFunction args and returns are copies (`PlaytestControls:Invoke("PlayerData","get")` gives a copy, edits do nothing).
+   - `EventService.luau`: touchGrass (18 s grass wall with flowers sweeps X -200..200, hits players below FLOOR2_HEIGHT: drop carry, pivot shove 14 studs + Sit 1.5 s; server velocity does not work on client-owned characters), brainFreeze (20 s, belt mutationChance 1, blue tint), brainLag (15 s, belt paused, gray tint, then one Epic-Mythic meme), dopamineRush (30 s, `LobeService.eventMultiplier = 2`). Banner through workspace attributes Event, EventColor, EventEnd. Scheduler: first at 45 s, then every 70-95 s, no repeat. `EventService.start(name)` for captures.
+
 ## Next step
 
-1. Client: `src/StarterPlayerScripts/ClientMain.client.luau` (LocalScript) with the HUD from the plan's Tier 1 list: title banner, cells + income, rot meter, Lobe LV, big alert banner (Alert remote), feed with dark backing (Feed remote), colored action bar (E Buy/Steal, F Focus Slap, L Mind Block, U Upgrade, R Brain Wash, B Brainpedia) with cooldown status, Brainpedia 12x5 grid ("FOUND n/60", owned in color + ✅, others gray + 🔒 "NOT FOUND"). Keys send Action names above. Hide StealPrompt on models whose `OwnerId` is the local player. Add the Studio-only 16:9 HUD band attribute (lesson 17).
-2. EventService (`init` is already called by ServerMain if the module exists): Touch Grass Wave, Brain Freeze, 1-2 more, event banner, Studio-only pause switch (lesson 19).
-3. Then Tier 1 polish, Tier 2 if time, screenshots by 12:30.
+1. Tier 1 polish (check the plan's Tier 1 list): make Brain Freeze and Touch Grass read better in shots (ice crystals or snow over the brain, bigger "TOUCH GRASS!" look), check the Steal flow end to end in play with the new HUD (E steal, "STOLEN! RUN HOME!", F slap, L Mind Block status), check Upgrade and Brain Wash keys from the client.
+2. Tier 2 if time: Meme Blender with catch card first (screenshot 1 wants a catch card).
+3. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan), then game.rbxl, thumbnail, README.
 
 ## Sync method (important)
 
@@ -38,8 +44,8 @@ Last update: session 2, 06:56 UTC. Studio place 115061750567662 saved to Roblox 
 
 ## Open bugs
 
-- None known. The client is not written, so actions are only reachable through PlaytestControls.
+- None known.
 
 ## Studio state
 
-- Edit mode. ServerMain enabled. No LocalScripts yet.
+- Edit mode. ServerMain enabled. ClientMain LocalScript in StarterPlayerScripts. EventService ModuleScript in ServerScriptService.

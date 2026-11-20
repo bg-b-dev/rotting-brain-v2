@@ -18,13 +18,14 @@ local rng = Random.new()
 local lobes = {}
 LobeService.lobes = lobes
 LobeService.onSteal = nil -- set by CarryService: function(player, lobe, slot)
+LobeService.eventMultiplier = 1
 
 local function ownerMultiplier(lobe)
 	local d = lobe.owner and PlayerData.get(lobe.owner)
 	if not d then return 1 end
 	local m = (1 + 0.25 * (d.lobeLevel - 1)) * (1 + 0.5 * d.rebirths)
 	if d.fullyRottedUntil > os.clock() then m *= 3 end
-	return m
+	return m * LobeService.eventMultiplier
 end
 
 function LobeService.itemIncome(item, lobe)
