@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 13, 12:58 UTC. Studio place 115061750567662 saved to Roblox (version 53). All src/ files match Studio (checksums).
+Last update: session 14, 13:12 UTC. Studio place 115061750567662 saved to Roblox (version 54). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -89,6 +89,8 @@ Last update: session 13, 12:58 UTC. Studio place 115061750567662 saved to Roblox
    - B: Brainpedia header cards (📖 BRAINPEDIA · gold FOUND n/60 · green MY LOBE n/20 +🧠X/s · red X closes), each tile has a dark strip with the rarity name (rarity color) and +🧠X/s (green), green ON LOBE badge (from the player's own StealPrompt models), footer with 8 rarity chips and the 8 mutations with multipliers (RichText, mutation colors). Pedia 0.74 tall.
    - Shots: 1-cover (player carries Mammut Midollone in front of Lobe 2, catch card), 2-touch-grass, 3-brainpedia 41/60, 4-steal (STOLEN! RUN HOME!, Mind Block ON). Committed and pushed.
    - Capture script: `scratchpad/shot.sh out.jpg` crops the newest capture in tool-results; JPEG quality steps down to 38 (q 56 was still over 256 KiB).
+
+15. Session 14 plan #5 D.1: ClientMain drops a feed line identical to one already shown (checked in play: 2 sends, 1 line). Fully Rotted already posts once per frenzy (only when it triggers). D.2 (new feed lines per shot) skipped: the shots stay as committed in session 13.
 
 ## Next step
 

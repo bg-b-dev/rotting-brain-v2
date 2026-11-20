@@ -155,6 +155,7 @@ local feed = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 
 new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 4) }, feed)
 local feedOrder = 0
 Remotes.Feed.OnClientEvent:Connect(function(text, color)
+	for _, l in ipairs(feed:GetDescendants()) do if l:IsA("TextLabel") and l.Text == text then return end end
 	feedOrder += 1
 	local back = panel(feed, { Size = UDim2.new(1, 0, 0, 27), BackgroundTransparency = 0.15, LayoutOrder = feedOrder })
 	label(back, { Position = UDim2.fromOffset(8, 2), Size = UDim2.new(1, -16, 1, -4), Text = text, TextColor3 = color or WHITE, TextXAlignment = Enum.TextXAlignment.Left })
