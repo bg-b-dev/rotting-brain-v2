@@ -392,8 +392,8 @@ local function applyRarityExtras(model, c, rarity)
 		light.Parent = c.body
 	end
 	if tier >= 4 then sparkle(c.body, rarity.color) end
-	if tier >= 5 then c.add("cyl", "AuraRing", Vector3.new(0.2, c.w * 2, c.w * 2), CFrame.new(0, -c.by - 0.2, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.3) end
-	if tier >= 6 then c.add("cyl", "LightBeam", Vector3.new(12, c.w * 1.3, c.w * 1.3), CFrame.new(0, 5, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.85) end
+	if tier >= 5 then c.add("cyl", "AuraRing", Vector3.new(0.15, c.w * 1.5, c.w * 1.5), CFrame.new(0, -c.by - 0.35, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.55) end
+	if tier >= 6 then c.add("cyl", "LightBeam", Vector3.new(14, 0.6, 0.6), CFrame.new(0, c.top + 8, c.bz + 0.5) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.6) end
 	if tier == 7 then halo(c, c.top + 0.6) end
 	if tier == 8 then FEATURES.gooDrips(c) end
 end
@@ -474,14 +474,14 @@ function BrainrotModelKit.build(entry, mutationName, level)
 	buildBrainCap(c)
 	local prop = PROPS[entry.prop]
 	if prop then prop(c) else warn("BrainrotModelKit: no prop " .. tostring(entry.prop)) end
+	local bboxCf, bboxSize = model:GetBoundingBox()
 	applyRarityExtras(model, c, rarity)
 	local look = mutationName and MUTATION_LOOKS[mutationName]
 	if look then look(model, c) end
 
-	local bboxCf, bboxSize = model:GetBoundingBox()
-	model.WorldPivot = CFrame.new(0, bboxCf.Position.Y - bboxSize.Y / 2, 0)
+	body.PivotOffset = CFrame.new(0, bboxCf.Position.Y - bboxSize.Y / 2 - body.Position.Y, 0)
 	model:ScaleTo(rarity.scale)
-	model:SetAttribute("TopHeight", (bboxSize.Y) * rarity.scale)
+	model:SetAttribute("TopHeight", bboxSize.Y * rarity.scale)
 	return model
 end
 
@@ -492,11 +492,11 @@ function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incom
 	local rarity = RarityConfig.list[entry.tier]
 	local anchor = Instance.new("Attachment")
 	anchor.Name = "NameTagAnchor"
-	anchor.WorldPosition = model:GetPivot().Position + Vector3.new(0, (model:GetAttribute("TopHeight") or 4) + 2.2, 0)
 	anchor.Parent = model.PrimaryPart
+	anchor.WorldPosition = model:GetPivot().Position + Vector3.new(0, (model:GetAttribute("TopHeight") or 4) + 2.2 * math.sqrt(rarity.scale) + 1, 0)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "NameTag"
-	gui.Size = UDim2.new(9, 0, 3.6, 0)
+	gui.Size = UDim2.new(9 * math.sqrt(rarity.scale), 0, 3.6 * math.sqrt(rarity.scale), 0)
 	gui.LightInfluence = 0
 	gui.MaxDistance = 140
 	gui.Parent = anchor
