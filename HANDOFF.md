@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 4, 07:21 UTC. Studio place 115061750567662 saved to Roblox (version 43). All src/ files match Studio (checksums).
+Last update: session 5, 07:33 UTC. Studio place 115061750567662 saved to Roblox (version 44). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -27,11 +27,18 @@ Last update: session 4, 07:21 UTC. Studio place 115061750567662 saved to Roblox 
    - Slap shove now uses PivotTo + Sit 1.5 s (server velocity did nothing). 🫧 does not render in Roblox: replaced by 🧼.
    - Test tip: in the Client datamodel, `prompt:InputHoldBegin()` / `InputHoldEnd()` triggers a ProximityPrompt. Set `EventsPaused` from the Server datamodel (client attributes do not replicate).
 
+6. Session 5 Tier 2 (all synced, playtest OK, no errors):
+   - `MemeBlender.luau` (new, init from ServerMain, in PlaytestControls): builds a blender at runtime at PLAZA_CENTER + (62, 0, 10) (mirror of the kiosks), glass jar, spinning blade, screen "MEME BLENDER · 3 SAME RARITY → 1 HIGHER" with a progress bar. Prompt "Blend 3" (hold 1 s): takes 3 brainrots of the lowest rarity that has 3 in your Lobe, spins them in the jar 10 s, then `LobeService.add` a random brainrot of the next rarity, 40 % mutation. Alert + feed line. One blend at a time (`busy`).
+   - Catch card: `LobeService.add` pushes `caught = {id, mut, income}` on a first find; ClientMain shows a "✨ NEW BRAINROT! ✨" card on the right (model, name, rarity · mutation, income, caption), 4.5 s, held by `HoldBanners`. Viewport code is now `modelView()` (shared with Brainpedia tiles).
+   - Touch Grass wall: SmoothPlastic (110,255,90) instead of dark Grass.
+   - README: Blender, catch card, event list fixed, U and R keys.
+   - Test tip: `PlaytestControls:Invoke("LobeService", "add", player, {id = n})` fills your Lobe (player Instances pass fine); `Invoke("MemeBlender", "blend", player)` runs a blend. `debugFill` needs a live lobe table, so it does NOT work through the hook.
+
 ## Next step
 
-1. Optional look fix: the Touch Grass wall body looks near black (Grass material under the pink light); a brighter color or SmoothPlastic may read better.
-2. Tier 2 if time: Meme Blender with catch card first (screenshot 1 wants a catch card).
-3. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan), then game.rbxl, thumbnail, README.
+1. Optional Tier 2: Thought Bubbles or Most Rotted board (plan Scope tiers). Brain Rot fills fast in play (Fully Rotted in about 2 min with 3 brainrots); fine, but set rot right before captures (lesson 20).
+2. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan; shot 1 can now show a held catch card), then game.rbxl, thumbnail, README.
+3. For shot 1 the Touch Grass wall was not checked in a capture after the color change: check it in the shot 2 setup.
 
 ## Sync method (important)
 
@@ -55,4 +62,4 @@ Last update: session 4, 07:21 UTC. Studio place 115061750567662 saved to Roblox 
 
 ## Studio state
 
-- Edit mode. ServerMain enabled. ClientMain LocalScript in StarterPlayerScripts. EventService ModuleScript in ServerScriptService.
+- Edit mode. ServerMain enabled. ClientMain LocalScript in StarterPlayerScripts. EventService and MemeBlender ModuleScripts in ServerScriptService.

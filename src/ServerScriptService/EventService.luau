@@ -44,7 +44,7 @@ local function wallModel()
 		p.Parent = model
 		return p
 	end
-	model.PrimaryPart = part("Wall", Vector3.new(10, 34, 400), Vector3.zero, GREEN, Enum.Material.Grass)
+	model.PrimaryPart = part("Wall", Vector3.new(10, 34, 400), Vector3.zero, Color3.fromRGB(110, 255, 90), Enum.Material.SmoothPlastic)
 	part("Crest", Vector3.new(11, 2, 400), Vector3.new(0, 17, 0), Color3.fromRGB(160, 255, 90), Enum.Material.Neon)
 	local flowers = { Color3.fromRGB(255, 90, 170), Color3.fromRGB(255, 230, 60), Color3.new(1, 1, 1), Color3.fromRGB(120, 200, 255) }
 	for i = 1, 70 do

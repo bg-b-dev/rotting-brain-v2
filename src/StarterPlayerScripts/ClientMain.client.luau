@@ -10,6 +10,7 @@ local NumberFormat = require(RS:WaitForChild("NumberFormat"))
 local Catalog = require(RS:WaitForChild("BrainrotCatalog"))
 local RarityConfig = require(RS:WaitForChild("RarityConfig"))
 local Kit = require(RS:WaitForChild("BrainrotModelKit"))
+local MutationConfig = require(RS:WaitForChild("MutationConfig"))
 
 local player = Players.LocalPlayer
 local FONT = Enum.Font.FredokaOne
@@ -125,12 +126,10 @@ local grid = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 
 new("UIGridLayout", { CellSize = UDim2.new(1 / 12, -5, 1 / 5, -5), CellPadding = UDim2.fromOffset(5, 5), SortOrder = Enum.SortOrder.LayoutOrder }, grid)
 local tiles = {}
 
-local function buildTile(entry)
-	local rarity = RarityConfig.byName[entry.rarity]
-	local tile = new("Frame", { BackgroundColor3 = rarity.color, BorderSizePixel = 0, LayoutOrder = entry.id, ZIndex = 6 }, grid)
-	corner(tile, 8)
-	local vp = new("ViewportFrame", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 0.72), Ambient = Color3.fromRGB(200, 200, 200), LightColor = WHITE, ZIndex = 7 }, tile)
-	local ok, model = pcall(Kit.build, entry, "Normal", 1)
+local function modelView(parent, entry, mut, props)
+	local vp = new("ViewportFrame", { BackgroundTransparency = 1, Ambient = Color3.fromRGB(200, 200, 200), LightColor = WHITE }, parent)
+	for k, v in pairs(props) do vp[k] = v end
+	local ok, model = pcall(Kit.build, entry, mut, 1)
 	if ok and model then
 		model.Parent = vp
 		local top = model:GetAttribute("TopHeight") or 4
@@ -143,6 +142,14 @@ local function buildTile(entry)
 			if d:IsA("BillboardGui") or d:IsA("ParticleEmitter") or d:IsA("Beam") then d:Destroy() end
 		end
 	end
+	return vp
+end
+
+local function buildTile(entry)
+	local rarity = RarityConfig.byName[entry.rarity]
+	local tile = new("Frame", { BackgroundColor3 = rarity.color, BorderSizePixel = 0, LayoutOrder = entry.id, ZIndex = 6 }, grid)
+	corner(tile, 8)
+	local vp = modelView(tile, entry, nil, { Size = UDim2.fromScale(1, 0.72), ZIndex = 7 })
 	local name = label(tile, { Position = UDim2.fromScale(0.03, 0.72), Size = UDim2.fromScale(0.94, 0.26), ZIndex = 8 })
 	local mark = label(tile, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -2, 0, 2), Size = UDim2.fromScale(0.3, 0.22), ZIndex = 8 })
 	tiles[entry.id] = { tile = tile, vp = vp, name = name, mark = mark, color = rarity.color, entry = entry }
@@ -160,6 +167,36 @@ local function refreshPedia()
 		t.mark.Text = owned and "✅" or ""
 	end
 	pediaTitle.Text = ("📖 BRAINPEDIA · FOUND %d/60"):format(foundCount)
+end
+
+-- Catch card: the first time a brainrot lands in the Lobe (server sends snapshot.caught).
+local card = panel(root, { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -10, 0.5, 10), Size = UDim2.new(0.2, 0, 0.42, 0), Visible = false, BackgroundTransparency = 0.05, ZIndex = 3 })
+local cardStroke = new("UIStroke", { Thickness = 4, Color = WHITE }, card)
+local cardScale = new("UIScale", {}, card)
+local cardToken = 0
+local function showCard(caught)
+	local entry = Catalog.list[caught.id]
+	if not entry then return end
+	local rarity = RarityConfig.byName[entry.rarity]
+	local mutation = caught.mut and MutationConfig.byName[caught.mut]
+	for _, child in ipairs(card:GetChildren()) do if child:IsA("GuiObject") then child:Destroy() end end
+	cardStroke.Color = rarity.color
+	label(card, { Position = UDim2.fromScale(0.04, 0.02), Size = UDim2.fromScale(0.92, 0.12), Text = "✨ NEW BRAINROT! ✨", TextColor3 = Color3.fromRGB(255, 230, 80), ZIndex = 4 })
+	local glow = new("Frame", { Position = UDim2.fromScale(0.06, 0.15), Size = UDim2.fromScale(0.88, 0.45), BackgroundColor3 = rarity.color, BackgroundTransparency = 0.55, ZIndex = 4 }, card)
+	corner(glow, 10)
+	modelView(glow, entry, caught.mut, { Size = UDim2.fromScale(1, 1), ZIndex = 5 })
+	label(card, { Position = UDim2.fromScale(0.04, 0.61), Size = UDim2.fromScale(0.92, 0.1), Text = entry.name, ZIndex = 4 })
+	label(card, { Position = UDim2.fromScale(0.04, 0.71), Size = UDim2.fromScale(0.92, 0.08), Text = string.upper(entry.rarity) .. (mutation and (" · " .. string.upper(mutation.name)) or ""), TextColor3 = mutation and mutation.color or rarity.color, ZIndex = 4 })
+	label(card, { Position = UDim2.fromScale(0.04, 0.79), Size = UDim2.fromScale(0.92, 0.08), Text = "+" .. NumberFormat.short(caught.income or entry.income) .. "/s", TextColor3 = Color3.fromRGB(120, 255, 120), ZIndex = 4 })
+	label(card, { Position = UDim2.fromScale(0.06, 0.88), Size = UDim2.fromScale(0.88, 0.1), Text = "\"" .. entry.caption .. "\"", TextColor3 = Color3.fromRGB(230, 210, 255), TextWrapped = true, TextStrokeTransparency = 0.6, ZIndex = 4 })
+	card.Visible = true
+	cardScale.Scale = 0.3
+	TweenService:Create(cardScale, TweenInfo.new(0.35, Enum.EasingStyle.Back), { Scale = 1 }):Play()
+	cardToken += 1
+	local token = cardToken
+	task.delay(4.5, function()
+		if token == cardToken and not workspace:GetAttribute("HoldBanners") then card.Visible = false end
+	end)
 end
 
 -- Action bar
@@ -211,8 +248,10 @@ end
 
 Remotes.State.OnClientEvent:Connect(function(snapshot)
 	for k, v in pairs(snapshot) do
+		if k == "caught" then continue end
 		if timers[k] ~= nil then timers[k] = v else state[k] = v end
 	end
+	if snapshot.caught then showCard(snapshot.caught) end
 	if snapshot.found then
 		foundSet, foundCount = {}, #snapshot.found
 		for _, id in ipairs(snapshot.found) do foundSet[id] = true end

@@ -183,8 +183,11 @@ function LobeService.add(player, item)
 	for slot = 1, SLOT_COUNT do
 		if not lobe.slots[slot] then
 			lobe.slots[slot] = { id = item.id, mut = item.mut }
-			PlayerData.get(player).found[item.id] = true
+			local d = PlayerData.get(player)
+			local isNew = not d.found[item.id]
+			d.found[item.id] = true
 			render(lobe, slot)
+			if isNew then PlayerData.push(player, { caught = { id = item.id, mut = item.mut, income = LobeService.itemIncome(lobe.slots[slot], lobe) } }) end
 			return slot
 		end
 	end
