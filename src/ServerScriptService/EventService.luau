@@ -9,6 +9,7 @@ local SynapseBelt = require(SSS.SynapseBelt)
 local CarryService = require(SSS.CarryService)
 local WorldBuilder = require(SSS.WorldBuilder)
 local Catalog = require(game.ReplicatedStorage.BrainrotCatalog)
+local Kit = require(game.ReplicatedStorage.BrainrotModelKit)
 
 local EventService = {}
 EventService.current = nil
@@ -174,7 +175,195 @@ EVENTS.dopamineRush = function()
 	LobeService.eventMultiplier = 1
 end
 
-local ORDER = { "touchGrass", "brainFreeze", "dopamineRush", "brainLag" }
+local PIXIE_BLUE = Color3.fromRGB(120, 200, 255)
+
+local function pixieModel()
+	local model = Instance.new("Model")
+	model.Name = "ProductivityPixie"
+	local function part(name, size, offset, color, shape, material)
+		local p = Instance.new("Part")
+		p.Name, p.Size, p.Color, p.Material = name, size, color, material or Enum.Material.SmoothPlastic
+		p.Anchored, p.CanCollide, p.CanQuery, p.CastShadow = true, false, false, false
+		if shape then p.Shape = shape end
+		p.CFrame = CFrame.new(offset)
+		p.Parent = model
+		return p
+	end
+	model.PrimaryPart = part("Body", Vector3.new(3, 3.6, 3), Vector3.zero, PIXIE_BLUE, Enum.PartType.Ball)
+	part("Head", Vector3.new(2.8, 2.8, 2.8), Vector3.new(0, 2.8, 0), Color3.fromRGB(255, 215, 180), Enum.PartType.Ball)
+	part("Bun", Vector3.new(1.4, 1.4, 1.4), Vector3.new(0, 4.4, 0.4), Color3.fromRGB(90, 60, 40), Enum.PartType.Ball)
+	for _, x in ipairs({ -0.6, 0.6 }) do
+		part("Lens", Vector3.new(0.2, 0.9, 0.9), Vector3.new(x, 3, -1.35), Color3.fromRGB(30, 30, 40), Enum.PartType.Cylinder).CFrame = CFrame.new(x, 3, -1.35) * CFrame.Angles(0, math.rad(90), 0)
+		local wing = part("Wing", Vector3.new(0.2, 3.4, 2.4), Vector3.new(x * 3, 1, 1.2), Color3.new(1, 1, 1), nil, Enum.Material.Neon)
+		wing.Transparency = 0.45
+		wing:SetAttribute("Side", x > 0 and 1 or -1)
+	end
+	part("Clipboard", Vector3.new(2.2, 2.8, 0.2), Vector3.new(0, 0, -1.8), Color3.fromRGB(150, 100, 60))
+	part("Sheet", Vector3.new(1.9, 2.3, 0.05), Vector3.new(0, -0.15, -1.92), Color3.new(1, 1, 1))
+	model:ScaleTo(2)
+	local rel = {}
+	for _, p in ipairs(model:GetChildren()) do rel[p] = model.PrimaryPart.CFrame:ToObjectSpace(p.CFrame) end
+	local papers = Instance.new("ParticleEmitter")
+	papers.Rate, papers.Lifetime, papers.Speed = 6, NumberRange.new(1.5, 2.5), NumberRange.new(2, 4)
+	papers.Size, papers.Rotation, papers.RotSpeed = NumberSequence.new(0.7), NumberRange.new(0, 360), NumberRange.new(-120, 120)
+	papers.Texture, papers.Acceleration = "rbxasset://textures/particles/sparkles_main.dds", Vector3.new(0, -6, 0)
+	papers.Parent = model.PrimaryPart
+	local anchor = Instance.new("Attachment")
+	anchor.Position = Vector3.new(0, 6.5, 0)
+	anchor.Parent = model.PrimaryPart
+	local gui = Instance.new("BillboardGui")
+	gui.Size, gui.LightInfluence = UDim2.new(11, 0, 2, 0), 0
+	gui.Parent = anchor
+	local label = Instance.new("TextLabel")
+	label.Size, label.BackgroundTransparency, label.TextScaled, label.Font = UDim2.fromScale(1, 1), 1, true, Enum.Font.LuckiestGuy
+	label.Text, label.TextColor3, label.TextStrokeTransparency = "📋 PRODUCTIVITY PIXIE · [F] SLAP", Color3.new(1, 1, 1), 0
+	label.TextStrokeColor3 = Color3.fromRGB(20, 60, 120)
+	label.Parent = gui
+	-- Parts are anchored, so the raid loop places each one from this table instead of welds.
+	return model, rel
+end
+
+local PIXIE_COUNT, RAID_SECONDS, PIXIE_SPEED, FLEE_SPEED = 6, 30, 30, 9
+local pixies = {}
+
+local function raidTargets()
+	local mine, npc = {}, {}
+	for _, lobe in pairs(LobeService.lobes) do
+		local d = lobe.owner and PlayerData.get(lobe.owner)
+		if not (d and d.mindBlockUntil > os.clock()) then
+			for slot, item in pairs(lobe.slots) do
+				if not item.stolenBy and lobe.models[slot] then table.insert(lobe.owner and mine or npc, { lobe = lobe, slot = slot }) end
+			end
+		end
+	end
+	return #mine > 0 and mine or npc
+end
+
+function EventService.slapPixie(player, root)
+	local best, bestDist
+	for _, px in ipairs(pixies) do
+		local p = px.model.PrimaryPart.Position
+		local dist = ((p - root.Position) * Vector3.new(1, 0, 1)).Magnitude
+		if not px.done and dist <= 14 and p.Y - root.Position.Y < 26 and (not bestDist or dist < bestDist) then best, bestDist = px, dist end
+	end
+	if not best then return false end
+	best.done = true
+	local bounty = 150
+	if best.carry then
+		bounty = math.max(150, math.floor(LobeService.itemIncome(best.carry.item) * 5))
+		LobeService.cancelSteal(best.carry.lobe, best.carry.slot)
+		best.carry.model:Destroy()
+		best.carry = nil
+	end
+	local d = PlayerData.get(player)
+	if d then d.cells += bounty end
+	PlayerData.alert(player, "👋 PIXIE SLAPPED! +🧠" .. bounty, Color3.fromRGB(255, 230, 60), 2)
+	PlayerData.feed("👋 " .. player.DisplayName .. " slapped a Productivity Pixie!", PIXIE_BLUE)
+	PlayerData.push(player)
+	return true
+end
+
+EVENTS.homeworkRaid = function()
+	announce("📋 HOMEWORK RAID · SLAP THE PIXIES [F]", Color3.fromRGB(255, 70, 70), RAID_SECONDS)
+	local fx = tint(Color3.fromRGB(255, 225, 225), 0)
+	local start, spawned, taken = os.clock(), 0, {}
+	local last = start
+	while os.clock() - start < RAID_SECONDS and (#pixies > 0 or spawned < PIXIE_COUNT) do
+		task.wait(0.05)
+		local now = os.clock()
+		local dt = now - last
+		last = now
+		if spawned < PIXIE_COUNT and now - start >= spawned * 4 then
+			spawned += 1
+			local list = {}
+			for _, t in ipairs(raidTargets()) do
+				if not taken[t.lobe.models[t.slot]] then table.insert(list, t) end
+			end
+			if #list > 0 then
+				local target = list[rng:NextInteger(1, #list)]
+				taken[target.lobe.models[target.slot]] = true
+				local model, rel = pixieModel()
+				local a = rng:NextNumber(0, math.pi * 2)
+				model.Parent = workspace
+				table.insert(pixies, { model = model, rel = rel, pos = Vector3.new(math.cos(a) * 60, 70, -25 + math.sin(a) * 60), target = target, phase = rng:NextNumber(0, 6) })
+			end
+		end
+		for i = #pixies, 1, -1 do
+			local px = pixies[i]
+			local goal
+			if px.done then
+				goal = nil
+			elseif px.flee then
+				goal = px.flee
+			else
+				local m = px.target.lobe.models[px.target.slot]
+				goal = m and m:GetPivot().Position + Vector3.new(0, 9, 0)
+				if not goal then px.flee = px.pos + Vector3.new(0, 40, 0) end
+			end
+			if goal then
+				local delta = goal - px.pos
+				local step = (px.flee and FLEE_SPEED or PIXIE_SPEED) * dt
+				if delta.Magnitude <= step then
+					px.pos = goal
+					if px.flee then
+						if px.carry then
+							local c = px.carry
+							local entry = Catalog.list[c.item.id]
+							LobeService.finishSteal(c.lobe, c.slot)
+							if c.lobe.owner then
+								PlayerData.alert(c.lobe.owner, "📋 A PIXIE TOOK YOUR " .. string.upper(entry.name) .. " TO HOMEWORK!", Color3.fromRGB(255, 70, 70), 3)
+								PlayerData.push(c.lobe.owner)
+							end
+							PlayerData.feed("📋 A Productivity Pixie stole " .. entry.name .. "!", PIXIE_BLUE)
+							c.model:Destroy()
+							px.carry = nil
+						end
+						px.done = true
+					else
+						local t = px.target
+						local item = LobeService.beginSteal(t.lobe, t.slot, "pixie")
+						if item then
+							local entry = Catalog.list[item.id]
+							local carried = Kit.build(entry, item.mut, 1)
+							for _, d in ipairs(carried:GetDescendants()) do if d:IsA("ProximityPrompt") then d:Destroy() end end
+							carried.Parent = workspace
+							px.carry = { lobe = t.lobe, slot = t.slot, item = item, model = carried, drop = 5 + carried:GetExtentsSize().Y }
+							if t.lobe.owner then PlayerData.alert(t.lobe.owner, "🚨 PIXIE GRABBED YOUR " .. string.upper(entry.name) .. "! [F] SLAP IT!", Color3.fromRGB(255, 70, 70), 3) end
+						end
+						local out = (px.pos * Vector3.new(1, 0, 1)).Unit
+						px.flee = px.pos + out * 120 + Vector3.new(0, 4, 0)
+					end
+				else
+					px.pos += delta.Unit * step
+				end
+			end
+			local face = goal and (goal - px.pos) * Vector3.new(1, 0, 1)
+			local look = face and face.Magnitude > 0.5 and CFrame.lookAt(px.pos, px.pos + face) or CFrame.new(px.pos)
+			local cf = look * CFrame.new(0, math.sin(now * 4 + px.phase) * 0.6, 0)
+			local flap = math.sin(now * 30) * 0.6
+			for p, offset in pairs(px.rel) do
+				local side = p:GetAttribute("Side")
+				p.CFrame = cf * offset * (side and CFrame.Angles(0, 0, side * flap) or CFrame.identity)
+			end
+			if px.carry then px.carry.model:PivotTo(cf * CFrame.new(0, -px.carry.drop, 0) * CFrame.Angles(0, math.pi, 0)) end
+			if px.done and not px.carry then
+				px.model:Destroy()
+				table.remove(pixies, i)
+			end
+		end
+	end
+	for _, px in ipairs(pixies) do
+		if px.carry then
+			LobeService.cancelSteal(px.carry.lobe, px.carry.slot)
+			px.carry.model:Destroy()
+		end
+		px.model:Destroy()
+	end
+	table.clear(pixies)
+	fx:Destroy()
+end
+
+local ORDER = { "touchGrass", "brainFreeze", "dopamineRush", "brainLag", "homeworkRaid" }
 
 function EventService.start(name)
 	if EventService.current or not EVENTS[name] then return false end
@@ -189,6 +378,7 @@ function EventService.start(name)
 end
 
 function EventService.init()
+	CarryService.onSlap = EventService.slapPixie
 	task.spawn(function()
 		local last
 		task.wait(45)

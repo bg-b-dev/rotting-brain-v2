@@ -17,7 +17,7 @@ every second. Rival kids sneak into your Lobe to steal them, and you sneak into 
 - 60 brainrots in 8 rarities, from Common to Brainrot God, each with a big name tag and income rate.
 - 8 mutations that multiply income.
 - Steal from rival Lobes, block thieves with Mind Block, knock them back with Focus Slap.
-- Events: the Touch Grass Wave sweeps the brain, Brain Freeze mutates every meme, Brain Lag stops the belt, Dopamine Rush doubles income.
+- Events: the Touch Grass Wave sweeps the brain, Brain Freeze mutates every meme, Brain Lag stops the belt, Dopamine Rush doubles income, and in a Homework Raid Productivity Pixies fly off with your brainrots (Focus Slap them for a bounty, Mind Block keeps them out).
 - The Brain Rot meter fills as you play. At 100% you are Fully Rotted and earn x3.
 - Meme Blender: put 3 brainrots of one rarity in, get 1 of the next rarity out, maybe mutated.
 - A "NEW BRAINROT!" catch card pops up for every first find.

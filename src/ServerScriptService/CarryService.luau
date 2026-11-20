@@ -141,6 +141,10 @@ function CarryService.slap(player)
 		end
 	end
 	popup(root, "FOCUS SLAP!", Color3.fromRGB(255, 230, 60))
+	if CarryService.onSlap and CarryService.onSlap(player, root) then
+		PlayerData.push(player)
+		return
+	end
 	if best then
 		local r, humanoid = rootOf(best)
 		local dir = (r.Position - root.Position) * Vector3.new(1, 0, 1)

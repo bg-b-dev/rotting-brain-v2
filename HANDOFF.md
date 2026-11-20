@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 8, 08:04 UTC. Studio place 115061750567662 saved to Roblox (version 47). All src/ files match Studio (checksums).
+Last update: session 9, 08:12 UTC. Studio place 115061750567662 saved to Roblox (version 48). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -57,9 +57,15 @@ Last update: session 8, 08:04 UTC. Studio place 115061750567662 saved to Roblox 
    - Checked in play: Brain Freeze reads pale cyan, Touch Grass wall bright green on pink.
    - Known look issue (old): the Meme Lobe folds stick out past the ball (Ball shape uses the smallest axis), so it reads like a cage. Optional fix: ball size uniform 60.
 
+10. Session 9 Productivity Pixie raid (Tier 2, synced, playtest OK, no errors):
+   - `EventService` event `homeworkRaid` (in the scheduler ORDER): banner "📋 HOMEWORK RAID · SLAP THE PIXIES [F]", 30 s, light red tint. One pixie every 4 s (6 max), built at runtime (blue body, glasses, bun, flapping Neon wings, clipboard, paper particles, label), `ScaleTo(2)`. Targets player Lobes first (NPC Lobes when no player has brainrots), skips Lobes with Mind Block up. Flies in at 30, grabs with `LobeService.beginSteal(lobe, slot, "pixie")`, flees outward 120 studs at 9 (about 13 s window), then `finishSteal`. Raid end: unfinished grabs go back (`cancelSteal`).
+   - Focus Slap: `CarryService.onSlap` (set in `EventService.init`) hits the nearest pixie within 14 studs horizontal: pixie gone, brainrot back on its podium, bounty max(150, 5 s of item income), alert + feed.
+   - Test: `PlaytestControls:Invoke("EventService", "start", "homeworkRaid")`. Good capture: camera (-35, 26, -30) look at (-90, 14, -70), about 11 s after the start.
+   - README event line updated.
+
 ## Next step
 
-1. Vibe pass, Most Rotted board and the bright look are done; do not redo them. Optional Tier 2 left: Thought Bubbles (design 10.5, needs a shop: keep it small, e.g. a plaza kiosk and 2 pads per Lobe) or the Productivity Pixie raid. Set rot right before captures (lesson 20). Shot 2 can show the Most Rotted board.
+1. Vibe pass, Most Rotted board, bright look and the Pixie raid are done; do not redo them. Optional Tier 2 left: Thought Bubbles (design 10.5, needs a shop: keep it small, e.g. a plaza kiosk and 2 pads per Lobe). Shot 4 (steal) could show a pixie raid instead of a rival thief if that reads better. Set rot right before captures (lesson 20). Shot 2 can show the Most Rotted board.
 2. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan; shot 1 can now show a held catch card), then game.rbxl, thumbnail, README.
 3. For shot 1 the Touch Grass wall was not checked in a capture after the color change: check it in the shot 2 setup.
 
