@@ -45,6 +45,19 @@ function PlayerData.get(player)
 	return data[player]
 end
 
+-- Studio captures: BindableFunction args are copies, so tests set fields here. found is an id list.
+function PlayerData.debugSet(player, fields)
+	local d = data[player]
+	for k, v in pairs(fields) do
+		if k == "found" then
+			d.found = {}
+			for _, id in ipairs(v) do d.found[id] = true end
+		else
+			d[k] = v
+		end
+	end
+end
+
 function PlayerData.remove(player)
 	data[player] = nil
 end
