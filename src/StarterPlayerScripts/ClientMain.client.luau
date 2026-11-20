@@ -61,11 +61,34 @@ local function panel(parent, props)
 	return f
 end
 
--- Title banner
-local title = panel(root, { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 6), Size = UDim2.new(0.6, 0, 0, 50), BackgroundColor3 = Color3.fromRGB(255, 70, 170), BackgroundTransparency = 0.1 })
+-- Title card and feature chips. Starts at x 140 to clear Roblox's top-left menu.
+local title = panel(root, { Position = UDim2.new(0, 140, 0, 4), Size = UDim2.new(0.17, 0, 0, 52), BackgroundColor3 = Color3.fromRGB(255, 70, 170), BackgroundTransparency = 0.05 })
 stroke(title, Color3.fromRGB(255, 230, 80), 3)
-label(title, { Size = UDim2.new(0.4, -8, 1, -6), Position = UDim2.fromOffset(8, 3), Text = "🧠 ROTTING BRAIN 🧠", TextColor3 = Color3.fromRGB(255, 240, 90) })
-label(title, { AnchorPoint = Vector2.new(1, 0.5), Size = UDim2.new(0.58, -8, 0.5, 0), Position = UDim2.new(1, -8, 0.5, 0), Text = "60 BRAINROTS · 8 MUTATIONS · STEAL · DEFENSE · REBIRTH" })
+label(title, { Size = UDim2.new(1, -12, 1, -8), Position = UDim2.fromOffset(6, 4), Text = "🧠 ROTTING BRAIN 🧠", TextColor3 = Color3.fromRGB(255, 240, 90) })
+
+local CHIP_ROWS = {
+	{
+		{ "60 BRAINROTS × 8 MUTATIONS = 480 VARIANTS", Color3.fromRGB(255, 70, 170) }, { "8 RARITIES", Color3.fromRGB(255, 140, 30) },
+		{ "8 MUTATIONS", Color3.fromRGB(150, 70, 230) }, { "STEAL", Color3.fromRGB(230, 40, 50) }, { "MIND BLOCK", Color3.fromRGB(240, 90, 130) },
+	},
+	{
+		{ "BRAIN WASH", Color3.fromRGB(210, 40, 200) }, { "QUESTS", Color3.fromRGB(20, 170, 160) }, { "5 EVENTS", Color3.fromRGB(40, 110, 240) },
+		{ "MEME BLENDER", Color3.fromRGB(130, 80, 240) }, { "BUBBLES", Color3.fromRGB(20, 180, 230) }, { "PIXIE RAID", Color3.fromRGB(230, 190, 20) },
+		{ "MOST ROTTED", Color3.fromRGB(215, 160, 20) }, { "FULLY ROTTED x3", Color3.fromRGB(90, 200, 30) },
+	},
+}
+local chips = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0.17, 148, 0, 4), Size = UDim2.new(0.83, -158, 0, 52) }, root)
+for r, row in ipairs(CHIP_ROWS) do
+	local units = 0
+	for _, chip in ipairs(row) do units += #chip[1] + 3 end
+	local line = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 0, (r - 1) * 0.5, 0), Size = UDim2.new(1, 0, 0.5, -2) }, chips)
+	new("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }, line)
+	for i, chip in ipairs(row) do
+		local f = panel(line, { LayoutOrder = i, Size = UDim2.new((#chip[1] + 3) / units, -4, 1, 0), BackgroundColor3 = chip[2], BackgroundTransparency = 0 })
+		stroke(f, Color3.fromRGB(30, 10, 40), 1.5)
+		label(f, { Size = UDim2.new(1, -8, 1, -6), Position = UDim2.fromOffset(4, 3), Text = chip[1], TextStrokeTransparency = 0.1 })
+	end
+end
 
 -- Event line: the next event and its countdown when idle, the live event when running.
 -- The server sets workspace attributes Event, EventColor, EventEnd, NextEvent and NextEventAt.
@@ -142,10 +165,41 @@ Remotes.Feed.OnClientEvent:Connect(function(text, color)
 end)
 
 -- Brainpedia
-local pedia = panel(root, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.47), Size = UDim2.fromScale(0.9, 0.7), Visible = false, BackgroundTransparency = 0.08, ZIndex = 5 })
+local state = { cells = 0, income = 0, rot = 0, lobeLevel = 1, rebirths = 0, upgradeCost = 150, brainWashCost = 250000 }
+local pedia = panel(root, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.48), Size = UDim2.fromScale(0.9, 0.74), Visible = false, BackgroundTransparency = 0.08, ZIndex = 5 })
 stroke(pedia, Color3.fromRGB(255, 220, 60), 3)
-local pediaTitle = label(pedia, { Position = UDim2.new(0, 0, 0, 6), Size = UDim2.new(1, 0, 0.09, 0), Text = "📖 BRAINPEDIA · FOUND 0/60", TextColor3 = Color3.fromRGB(255, 220, 60), ZIndex = 6 })
-local grid = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0.11, 0), Size = UDim2.new(1, -20, 0.88, -6), ZIndex = 6 }, pedia)
+local function pediaCard(x, w, color, text)
+	local f = panel(pedia, { Position = UDim2.new(x, 0, 0.012, 0), Size = UDim2.new(w, -8, 0.085, 0), BackgroundColor3 = color, BackgroundTransparency = 0, ZIndex = 6 })
+	stroke(f, Color3.fromRGB(30, 10, 40), 2)
+	return label(f, { Size = UDim2.new(1, -12, 1, -6), Position = UDim2.fromOffset(6, 3), Text = text, ZIndex = 7 })
+end
+pediaCard(0.01, 0.3, Color3.fromRGB(40, 16, 60), "📖 BRAINPEDIA").TextColor3 = Color3.fromRGB(255, 220, 60)
+local pediaFound = pediaCard(0.32, 0.22, Color3.fromRGB(230, 170, 20), "FOUND 0/60")
+local pediaLobe = pediaCard(0.55, 0.36, Color3.fromRGB(40, 170, 70), "MY LOBE 0/20")
+local pediaClose = new("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(0.99, 0, 0.012, 0), Size = UDim2.new(0.07, 0, 0.085, 0), BackgroundColor3 = Color3.fromRGB(220, 40, 50), Font = FONT, Text = "X", TextColor3 = WHITE, TextScaled = true, ZIndex = 7 }, pedia)
+corner(pediaClose, 8)
+stroke(pediaClose, Color3.fromRGB(30, 10, 40), 2)
+local grid = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0.11, 0), Size = UDim2.new(1, -20, 0.77, -4), ZIndex = 6 }, pedia)
+
+local footer = new("Frame", { BackgroundTransparency = 1, Position = UDim2.new(0, 10, 0.89, 0), Size = UDim2.new(1, -20, 0.1, -4), ZIndex = 6 }, pedia)
+local rarityRow = new("Frame", { BackgroundTransparency = 1, Size = UDim2.fromScale(0.56, 1), ZIndex = 6 }, footer)
+new("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 4), VerticalAlignment = Enum.VerticalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder }, rarityRow)
+for i, rarity in ipairs(RarityConfig.list) do
+	local f = panel(rarityRow, { LayoutOrder = i, Size = UDim2.new(1 / 8, -4, 0.7, 0), BackgroundColor3 = rarity.color, BackgroundTransparency = 0, ZIndex = 6 })
+	stroke(f, Color3.fromRGB(30, 10, 40), 1.5)
+	label(f, { Size = UDim2.new(1, -6, 1, -4), Position = UDim2.fromOffset(3, 2), Text = rarity.name:upper(), ZIndex = 7 })
+end
+local mutParts = {}
+for i, m in ipairs(MutationConfig.list) do
+	local c = m.color
+	mutParts[i] = ('<font color="#%02X%02X%02X">%s x%d</font>'):format(math.round(c.R * 255), math.round(c.G * 255), math.round(c.B * 255), m.name:upper(), m.multiplier)
+end
+for line = 1, 2 do
+	label(footer, {
+		Position = UDim2.new(0.57, 0, (line - 1) * 0.5, 0), Size = UDim2.new(0.43, 0, 0.5, -1), RichText = true, ZIndex = 7, TextXAlignment = Enum.TextXAlignment.Right,
+		Text = table.concat({ mutParts[line * 4 - 3], mutParts[line * 4 - 2], mutParts[line * 4 - 1], mutParts[line * 4] }, " · "),
+	})
+end
 new("UIGridLayout", { CellSize = UDim2.new(1 / 12, -5, 1 / 5, -5), CellPadding = UDim2.fromOffset(5, 5), SortOrder = Enum.SortOrder.LayoutOrder }, grid)
 local tiles = {}
 
@@ -173,26 +227,40 @@ local function buildTile(entry)
 	local tile = new("Frame", { BackgroundColor3 = rarity.color, BorderSizePixel = 0, LayoutOrder = entry.id, ZIndex = 6 }, grid)
 	corner(tile, 8)
 	local vp = modelView(tile, entry, nil, { Size = UDim2.fromScale(1, 0.64), ZIndex = 7 })
-	local name = label(tile, { Position = UDim2.fromScale(0.03, 0.63), Size = UDim2.fromScale(0.94, 0.2), Text = entry.name, ZIndex = 8 })
-	local status = label(tile, { Position = UDim2.fromScale(0.03, 0.83), Size = UDim2.fromScale(0.94, 0.15), ZIndex = 8 })
+	local name = label(tile, { Position = UDim2.fromScale(0.03, 0.62), Size = UDim2.fromScale(0.94, 0.2), Text = entry.name, ZIndex = 8 })
+	local strip = new("Frame", { Position = UDim2.fromScale(0, 0.82), Size = UDim2.fromScale(1, 0.18), BackgroundColor3 = Color3.fromRGB(20, 8, 30), BackgroundTransparency = 0.15, BorderSizePixel = 0, ZIndex = 8 }, tile)
+	corner(strip, 6)
+	label(strip, { Position = UDim2.fromScale(0.04, 0.05), Size = UDim2.fromScale(0.5, 0.9), Text = rarity.name:upper(), TextColor3 = rarity.color, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 9 })
+	label(strip, { Position = UDim2.fromScale(0.54, 0.05), Size = UDim2.fromScale(0.42, 0.9), Text = "+🧠" .. NumberFormat.short(entry.income) .. "/s", TextColor3 = Color3.fromRGB(120, 255, 120), TextXAlignment = Enum.TextXAlignment.Right, ZIndex = 9 })
 	local mark = label(tile, { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -2, 0, 2), Size = UDim2.fromScale(0.3, 0.22), ZIndex = 8 })
-	tiles[entry.id] = { tile = tile, vp = vp, name = name, status = status, mark = mark, color = rarity.color, entry = entry }
+	local badge = panel(tile, { Position = UDim2.fromOffset(2, 2), Size = UDim2.fromScale(0.5, 0.16), BackgroundColor3 = Color3.fromRGB(40, 190, 70), BackgroundTransparency = 0, Visible = false, ZIndex = 8 })
+	label(badge, { Size = UDim2.new(1, -4, 1, -2), Position = UDim2.fromOffset(2, 1), Text = "ON LOBE", ZIndex = 9 })
+	tiles[entry.id] = { tile = tile, vp = vp, name = name, mark = mark, badge = badge, color = rarity.color, entry = entry }
 end
 
 local foundSet, foundCount = {}, 0
+local prompts = {}
 local function refreshPedia()
 	if not next(tiles) then for _, entry in ipairs(Catalog.list) do buildTile(entry) end end
+	local onLobe, lobeCount = {}, 0
+	for prompt in pairs(prompts) do
+		local model = prompt.Parent and prompt:FindFirstAncestorOfClass("Model")
+		if model and model:GetAttribute("OwnerId") == player.UserId then
+			onLobe[model:GetAttribute("BrainrotId")] = true
+			lobeCount += 1
+		end
+	end
 	for id, t in pairs(tiles) do
+		t.badge.Visible = onLobe[id] == true
 		local owned = foundSet[id]
 		t.tile.BackgroundColor3 = owned and t.color or Color3.fromRGB(95, 95, 104)
 		t.vp.ImageColor3 = owned and WHITE or Color3.fromRGB(150, 150, 160)
 		t.vp.ImageTransparency = owned and 0 or 0.35
 		t.name.TextColor3 = owned and WHITE or Color3.fromRGB(200, 200, 208)
-		t.status.Text = owned and ("+🧠" .. NumberFormat.short(t.entry.income) .. "/s") or "NOT FOUND"
-		t.status.TextColor3 = owned and Color3.fromRGB(120, 255, 120) or Color3.fromRGB(175, 175, 182)
 		t.mark.Text = owned and "✅" or "🔒"
 	end
-	pediaTitle.Text = ("📖 BRAINPEDIA · FOUND %d/60"):format(foundCount)
+	pediaFound.Text = ("FOUND %d/60"):format(foundCount)
+	pediaLobe.Text = ("MY LOBE %d/20  +🧠%s/s"):format(lobeCount, NumberFormat.short(state.income or 0))
 end
 
 -- Catch card: the first time a brainrot lands in the Lobe (server sends snapshot.caught).
@@ -226,7 +294,6 @@ local function showCard(caught)
 end
 
 -- Action bar
-local state = { cells = 0, income = 0, rot = 0, lobeLevel = 1, rebirths = 0, upgradeCost = 150, brainWashCost = 250000 }
 local timers = { slapCooldown = 0, mindBlock = 0, mindBlockCooldown = 0, fullyRotted = 0 }
 local bar = new("Frame", { BackgroundTransparency = 1, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -10), Size = UDim2.new(0.78, 0, 0, 78) }, root)
 new("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, HorizontalAlignment = Enum.HorizontalAlignment.Center, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder }, bar)
@@ -251,6 +318,7 @@ local function togglePedia()
 	pedia.Visible = not pedia.Visible
 	if pedia.Visible then refreshPedia() end
 end
+pediaClose.Activated:Connect(togglePedia)
 actionButton(1, "E", "Buy/Steal", Color3.fromRGB(40, 170, 90))
 actionButton(2, "F", "Focus Slap", Color3.fromRGB(230, 120, 30), function() send("slap") end)
 actionButton(3, "L", "Mind Block", Color3.fromRGB(230, 60, 160), function() send("mindBlock") end)
@@ -345,7 +413,6 @@ RunService.Heartbeat:Connect(function(dt)
 end)
 
 -- Hide the Steal prompt on the local player's own brainrots.
-local prompts = {}
 local function track(d)
 	if d:IsA("ProximityPrompt") and d.Name == "StealPrompt" then prompts[d] = true end
 end
