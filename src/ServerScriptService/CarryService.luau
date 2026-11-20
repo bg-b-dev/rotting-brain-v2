@@ -145,8 +145,9 @@ function CarryService.slap(player)
 		local r, humanoid = rootOf(best)
 		local dir = (r.Position - root.Position) * Vector3.new(1, 0, 1)
 		dir = dir.Magnitude > 0.1 and dir.Unit or root.CFrame.LookVector
+		best.Character:PivotTo(r.CFrame + dir * 12 + Vector3.new(0, 3, 0))
 		humanoid.Sit = true
-		r.AssemblyLinearVelocity = dir * 70 + Vector3.new(0, 35, 0)
+		task.delay(1.5, function() humanoid.Sit = false end)
 		popup(r, "💥 SLAPPED!", RED)
 		if carrying[best] and carrying[best].from then
 			CarryService.drop(best)

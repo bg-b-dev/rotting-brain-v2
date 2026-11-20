@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 3, 07:15 UTC. Studio place 115061750567662 saved to Roblox (version 41). All src/ files match Studio (checksums).
+Last update: session 4, 07:21 UTC. Studio place 115061750567662 saved to Roblox (version 43). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -20,9 +20,16 @@ Last update: session 3, 07:15 UTC. Studio place 115061750567662 saved to Roblox 
    - `PlayerData.debugSet(player, {found = {ids}, cells=, rot=, ...})`: test setter, because BindableFunction args and returns are copies (`PlaytestControls:Invoke("PlayerData","get")` gives a copy, edits do nothing).
    - `EventService.luau`: touchGrass (18 s grass wall with flowers sweeps X -200..200, hits players below FLOOR2_HEIGHT: drop carry, pivot shove 14 studs + Sit 1.5 s; server velocity does not work on client-owned characters), brainFreeze (20 s, belt mutationChance 1, blue tint), brainLag (15 s, belt paused, gray tint, then one Epic-Mythic meme), dopamineRush (30 s, `LobeService.eventMultiplier = 2`). Banner through workspace attributes Event, EventColor, EventEnd. Scheduler: first at 45 s, then every 70-95 s, no repeat. `EventService.start(name)` for captures.
 
+5. Session 4 Tier 1 polish (all synced, playtest OK, no errors):
+   - Brain Freeze: `freezeModel()` adds a Glass ice shell over the Meme Lobe, icicles, Ice crystals along the belt, a frost sheet over the floor (y 0.12), snow ParticleEmitter at y 70; tint (165,210,255) saturation -0.15. Removed at the end.
+   - Touch Grass: SurfaceGui "🌱 TOUCH GRASS!" x3 on both wall faces (reads well in shots).
+   - Steal flow checked in play: hold StealPrompt on an NPC podium -> carry -> HomeZone places it, feed line OK. Upgrade, Brain Wash, Mind Block, Slap from the client Action remote OK.
+   - Slap shove now uses PivotTo + Sit 1.5 s (server velocity did nothing). 🫧 does not render in Roblox: replaced by 🧼.
+   - Test tip: in the Client datamodel, `prompt:InputHoldBegin()` / `InputHoldEnd()` triggers a ProximityPrompt. Set `EventsPaused` from the Server datamodel (client attributes do not replicate).
+
 ## Next step
 
-1. Tier 1 polish (check the plan's Tier 1 list): make Brain Freeze and Touch Grass read better in shots (ice crystals or snow over the brain, bigger "TOUCH GRASS!" look), check the Steal flow end to end in play with the new HUD (E steal, "STOLEN! RUN HOME!", F slap, L Mind Block status), check Upgrade and Brain Wash keys from the client.
+1. Optional look fix: the Touch Grass wall body looks near black (Grass material under the pink light); a brighter color or SmoothPlastic may read better.
 2. Tier 2 if time: Meme Blender with catch card first (screenshot 1 wants a catch card).
 3. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan), then game.rbxl, thumbnail, README.
 

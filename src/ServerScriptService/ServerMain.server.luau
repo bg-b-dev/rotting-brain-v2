@@ -55,8 +55,8 @@ ACTIONS.brainWash = function(player, d)
 	d.cells, d.stored, d.lobeLevel, d.rot = 60, 0, 1, 0
 	d.rebirths += 1
 	LobeService.clear(player)
-	PlayerData.alert(player, "🫧 BRAIN WASHED! x" .. (1 + 0.5 * d.rebirths) .. " INCOME FOREVER", Color3.fromRGB(60, 230, 255), 3)
-	PlayerData.feed("🫧 " .. player.DisplayName .. " Brain Washed (rebirth " .. d.rebirths .. ")!", Color3.fromRGB(60, 230, 255))
+	PlayerData.alert(player, "🧼 BRAIN WASHED! x" .. (1 + 0.5 * d.rebirths) .. " INCOME FOREVER", Color3.fromRGB(60, 230, 255), 3)
+	PlayerData.feed("🧼 " .. player.DisplayName .. " Brain Washed (rebirth " .. d.rebirths .. ")!", Color3.fromRGB(60, 230, 255))
 end
 ACTIONS.collect = function(player) LobeService.collect(player) end
 

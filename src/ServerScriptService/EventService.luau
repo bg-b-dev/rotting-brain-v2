@@ -51,6 +51,60 @@ local function wallModel()
 		local f = part("Flower", Vector3.new(2.6, 2.6, 2.6), Vector3.new(rng:NextNumber(-5.5, 5.5), rng:NextNumber(-15, 16), rng:NextNumber(-198, 198)), flowers[i % #flowers + 1], Enum.Material.SmoothPlastic)
 		f.Shape = Enum.PartType.Ball
 	end
+	for _, face in ipairs({ Enum.NormalId.Left, Enum.NormalId.Right }) do
+		local gui = Instance.new("SurfaceGui")
+		gui.Face, gui.SizingMode, gui.PixelsPerStud, gui.LightInfluence = face, Enum.SurfaceGuiSizingMode.PixelsPerStud, 10, 0
+		local text = Instance.new("TextLabel")
+		text.Size, text.BackgroundTransparency, text.TextScaled, text.Font = UDim2.fromScale(1, 1), 1, true, Enum.Font.FredokaOne
+		text.Text = "🌱 TOUCH GRASS! 🌱 TOUCH GRASS! 🌱 TOUCH GRASS! 🌱"
+		text.TextColor3, text.TextStrokeColor3, text.TextStrokeTransparency = Color3.new(1, 1, 1), Color3.fromRGB(20, 80, 10), 0
+		text.Parent = gui
+		gui.Parent = model.PrimaryPart
+	end
+	return model
+end
+
+local ICE = Color3.fromRGB(170, 230, 255)
+
+local function freezeModel()
+	local model = Instance.new("Model")
+	model.Name = "BrainFreezeIce"
+	local function ice(size, cf, shape)
+		local p = Instance.new("Part")
+		p.Size, p.CFrame, p.Color, p.Material, p.Transparency = size, cf, ICE, Enum.Material.Glass, 0.35
+		p.Anchored, p.CanCollide, p.CanQuery, p.CastShadow = true, false, false, false
+		if shape then p.Shape = shape end
+		p.Parent = model
+		return p
+	end
+	local center = WorldBuilder.MEME_LOBE_CENTER
+	ice(Vector3.new(64, 55, 64), CFrame.new(center), Enum.PartType.Ball)
+	for i = 1, 16 do
+		local a = i / 16 * math.pi * 2
+		ice(Vector3.new(2.4, rng:NextNumber(8, 16), 2.4), CFrame.new(center + Vector3.new(math.cos(a) * 26, -18, math.sin(a) * 26)) * CFrame.Angles(0, a, math.rad(180)))
+	end
+	local path = WorldBuilder.BELT_PATH
+	for i = 1, #path - 1 do
+		local a, b = path[i], path[i + 1]
+		for t = 0, (b - a).Magnitude, 12 do
+			local h = rng:NextNumber(6, 14)
+			local point = a:Lerp(b, t / (b - a).Magnitude) + Vector3.new(rng:NextNumber(-8, 8), h / 2, rng:NextNumber(-8, 8))
+			ice(Vector3.new(3, h, 3), CFrame.new(point) * CFrame.Angles(rng:NextNumber(-0.4, 0.4), rng:NextNumber(0, 6), rng:NextNumber(-0.4, 0.4)))
+		end
+	end
+	for _, p in ipairs(model:GetChildren()) do
+		if p.Size.X == 3 then p.Material, p.Transparency = Enum.Material.Ice, 0.1 end
+	end
+	local frost = ice(Vector3.new(400, 0.2, 400), CFrame.new(0, 0.12, 0))
+	frost.Material, frost.Color, frost.Transparency = Enum.Material.Ice, Color3.fromRGB(200, 235, 255), 0.45
+	local sky = ice(Vector3.new(300, 1, 300), CFrame.new(0, 70, -30))
+	sky.Transparency = 1
+	local snow = Instance.new("ParticleEmitter")
+	snow.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+	snow.Rate, snow.Lifetime, snow.Speed = 400, NumberRange.new(5, 7), NumberRange.new(12, 16)
+	snow.EmissionDirection, snow.Size = Enum.NormalId.Bottom, NumberSequence.new(0.9)
+	snow.Color, snow.LightEmission = ColorSequence.new(Color3.new(1, 1, 1)), 0.6
+	snow.Parent = sky
 	return model
 end
 
@@ -90,12 +144,15 @@ end
 
 EVENTS.brainFreeze = function()
 	announce("🧊 BRAIN FREEZE · EVERY MEME MUTATES", Color3.fromRGB(80, 190, 255), 20)
-	local fx = tint(Color3.fromRGB(190, 225, 255))
+	local fx = tint(Color3.fromRGB(165, 210, 255), -0.15)
+	local iceModel = freezeModel()
+	iceModel.Parent = workspace
 	local old = SynapseBelt.mutationChance
 	SynapseBelt.mutationChance = 1
 	task.wait(20)
 	SynapseBelt.mutationChance = old
 	fx:Destroy()
+	iceModel:Destroy()
 end
 
 EVENTS.brainLag = function()
