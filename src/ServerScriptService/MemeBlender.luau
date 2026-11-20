@@ -104,7 +104,7 @@ function MemeBlender.blend(player)
 	for i, slot in ipairs(slots) do
 		local item = lobe.slots[slot]
 		local model = Kit.build(Catalog.list[item.id], item.mut, 1)
-		model:ScaleTo(model:GetScale() * 0.55)
+		model:ScaleTo(model:GetScale() * 0.25)
 		model:PivotTo(CFrame.new(parts.center + Vector3.new(math.cos(i * 2.1) * 2.5, (i - 2) * 2, math.sin(i * 2.1) * 2.5)))
 		for _, d in ipairs(model:GetDescendants()) do
 			if d:IsA("BasePart") then d.Anchored, d.CanCollide = true, false end

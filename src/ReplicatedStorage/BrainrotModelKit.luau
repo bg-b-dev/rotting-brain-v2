@@ -392,9 +392,21 @@ local function applyRarityExtras(model, c, rarity)
 		light.Color, light.Range, light.Brightness = rarity.color, 4 + tier, 0.6
 		light.Parent = c.body
 	end
-	if tier >= 4 then sparkle(c.body, rarity.color) end
-	if tier >= 5 then c.add("cyl", "AuraRing", Vector3.new(0.15, c.w * 1.5, c.w * 1.5), CFrame.new(0, -c.by - 0.35, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.55) end
-	if tier >= 6 then c.add("cyl", "LightBeam", Vector3.new(14, 0.6, 0.6), CFrame.new(0, c.top + 8, c.bz + 0.5) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.6) end
+	c.add("cyl", "AuraDisc", Vector3.new(0.12, c.w * 1.6, c.w * 1.6), CFrame.new(0, c.bottom + 0.08, 0) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.1)
+	if tier >= 3 then
+		local p = Instance.new("ParticleEmitter")
+		p.Texture = "rbxasset://textures/particles/sparkles_main.dds"
+		p.Color = ColorSequence.new(rarity.color)
+		p.LightEmission, p.Rate, p.Speed = 1, 3 * tier, NumberRange.new(1.5, 3)
+		p.Lifetime = NumberRange.new(0.8, 1.5)
+		p.Size = NumberSequence.new(0.35, 0)
+		p.SpreadAngle = Vector2.new(180, 180)
+		p.Parent = c.body
+	end
+	if tier >= 6 then
+		local len = c.top - c.bottom + 1
+		c.add("cyl", "LightBeam", Vector3.new(len, 0.3, 0.3), CFrame.new(0, c.bottom + len / 2, c.bz + 0.4) * CFrame.Angles(0, 0, math.pi / 2), rarity.color, NEON, 0.5)
+	end
 	if tier == 7 then halo(c, c.top + 0.6) end
 	if tier == 8 then FEATURES.gooDrips(c) end
 end
@@ -422,6 +434,11 @@ local MUTATION_LOOKS = {
 		floatText(c.body, "+∞ AURA", GOLD, c.top + 2.4, 2.4)
 	end,
 }
+
+-- Characters must out-size the player; sqrt keeps the high rarities from outgrowing the podiums.
+function BrainrotModelKit.displayScale(rarity)
+	return 2.2 * math.sqrt(rarity.scale)
+end
 
 function BrainrotModelKit.build(entry, mutationName, level)
 	local rarity = RarityConfig.list[entry.tier]
@@ -476,13 +493,17 @@ function BrainrotModelKit.build(entry, mutationName, level)
 	local prop = PROPS[entry.prop]
 	if prop then prop(c) else warn("BrainrotModelKit: no prop " .. tostring(entry.prop)) end
 	local bboxCf, bboxSize = model:GetBoundingBox()
+	c.bottom = bboxCf.Position.Y - bboxSize.Y / 2 - body.Position.Y
 	applyRarityExtras(model, c, rarity)
 	local look = mutationName and MUTATION_LOOKS[mutationName]
 	if look then look(model, c) end
+	local mutation = mutationName and MutationConfig.byName[mutationName]
+	if mutation then c.add("cyl", "MutationRing", Vector3.new(0.1, c.w * 2, c.w * 2), CFrame.new(0, c.bottom + 0.03, 0) * CFrame.Angles(0, 0, math.pi / 2), mutation.color, NEON, 0.15) end
 
-	body.PivotOffset = CFrame.new(0, bboxCf.Position.Y - bboxSize.Y / 2 - body.Position.Y, 0)
-	model:ScaleTo(rarity.scale)
-	model:SetAttribute("TopHeight", bboxSize.Y * rarity.scale)
+	body.PivotOffset = CFrame.new(0, c.bottom, 0)
+	local scale = BrainrotModelKit.displayScale(rarity)
+	model:ScaleTo(scale)
+	model:SetAttribute("TopHeight", bboxSize.Y * scale)
 	return model
 end
 
@@ -494,10 +515,10 @@ function BrainrotModelKit.attachNameTag(model, entry, mutationName, level, incom
 	local anchor = Instance.new("Attachment")
 	anchor.Name = "NameTagAnchor"
 	anchor.Parent = model.PrimaryPart
-	anchor.WorldPosition = model:GetPivot().Position + Vector3.new(0, (model:GetAttribute("TopHeight") or 4) + 2.2 * math.sqrt(rarity.scale) + 1, 0)
+	anchor.WorldPosition = model:GetPivot().Position + Vector3.new(0, (model:GetAttribute("TopHeight") or 4) + 1.7 * math.sqrt(rarity.scale) + 1, 0)
 	local gui = Instance.new("BillboardGui")
 	gui.Name = "NameTag"
-	gui.Size = UDim2.new(9 * math.sqrt(rarity.scale), 0, 3.6 * math.sqrt(rarity.scale), 0)
+	gui.Size = UDim2.new(6.8 * math.sqrt(rarity.scale), 0, 2.7 * math.sqrt(rarity.scale), 0)
 	gui.LightInfluence = 0
 	gui.MaxDistance = 140
 	gui.Parent = anchor

@@ -9,6 +9,14 @@ local GOO = Color3.fromRGB(110, 255, 60)
 local NERVE = Color3.fromRGB(40, 240, 255)
 local BONE = Color3.fromHex("EDE4D3")
 local BELT_PURPLE = Color3.fromRGB(45, 20, 70)
+local FLOOR_PURPLE = Color3.fromRGB(40, 10, 60)
+local VEIN_LIME = Color3.fromRGB(130, 255, 80)
+local LOBE_DARK = Color3.fromRGB(35, 15, 50)
+local WALL_DARK = Color3.fromRGB(22, 8, 32)
+WorldBuilder.LOBE_ACCENTS = {
+	Color3.fromRGB(0, 230, 255), Color3.fromRGB(130, 255, 60), Color3.fromRGB(255, 230, 40), Color3.fromRGB(255, 140, 30),
+	Color3.fromRGB(255, 60, 180), Color3.fromRGB(60, 120, 255), Color3.fromRGB(170, 70, 255), Color3.fromRGB(255, 50, 60),
+}
 
 WorldBuilder.FLOOR_SIZE = 400
 WorldBuilder.SKULL_RADIUS = 205
@@ -18,19 +26,19 @@ WorldBuilder.BELT_PATH = {
 	Vector3.new(0, 1, -105), Vector3.new(-38, 1, -105), Vector3.new(-38, 1, 55),
 	Vector3.new(38, 1, 55), Vector3.new(38, 1, -105), Vector3.new(0, 1, -105),
 }
-WorldBuilder.LOBE_SIZE = Vector3.new(40, 1, 30)
+WorldBuilder.LOBE_SIZE = Vector3.new(48, 1, 30)
 WorldBuilder.LOBE_CENTERS = {
 	Vector3.new(-120, 0, -45), Vector3.new(-68, 0, -45), Vector3.new(-120, 0, 15), Vector3.new(-68, 0, 15),
 	Vector3.new(68, 0, -45), Vector3.new(120, 0, -45), Vector3.new(68, 0, 15), Vector3.new(120, 0, 15),
 }
-WorldBuilder.FLOOR2_HEIGHT = 14
+WorldBuilder.FLOOR2_HEIGHT = 18
 WorldBuilder.PLAZA_CENTER = Vector3.new(0, 0, 112)
 
 -- Podium slots in a Lobe's own frame (-Z faces the belt): 10 on floor 1, 10 on floor 2.
-local PODIUM_COLUMNS = { -16, -8, 0, 8, 16 }
+local PODIUM_COLUMNS = { -20, -10, 0, 10, 20 }
 local PODIUM_ROWS = {
 	{ z = -10, y = 0 }, { z = -2, y = 0 },
-	{ z = 5, y = WorldBuilder.FLOOR2_HEIGHT }, { z = 11.5, y = WorldBuilder.FLOOR2_HEIGHT },
+	{ z = 4.5, y = WorldBuilder.FLOOR2_HEIGHT }, { z = 11.5, y = WorldBuilder.FLOOR2_HEIGHT },
 }
 
 local KIOSKS = {
@@ -102,7 +110,7 @@ end
 local function buildBrainFloor(world)
 	local f = folder(world, "BrainFloor")
 	local size = WorldBuilder.FLOOR_SIZE
-	makePart(f, "Floor", Vector3.new(size, 4, size), CFrame.new(0, -2, 0), PINK)
+	makePart(f, "Floor", Vector3.new(size, 4, size), CFrame.new(0, -2, 0), FLOOR_PURPLE)
 	local rng = Random.new(307)
 	local placed = 0
 	while placed < 70 do
@@ -114,7 +122,7 @@ local function buildBrainFloor(world)
 			local cf = CFrame.new(x, 0.4, z) * CFrame.Angles(0, heading, 0)
 			for segment = 1, 4 do
 				local len = rng:NextNumber(7, 11)
-				local piece = makePart(f, "FoldRidge", Vector3.new(len, 3, 3), cf * CFrame.new(len / 2, 0, 0), FOLD, nil, Enum.PartType.Cylinder)
+				local piece = makePart(f, "FoldRidge", Vector3.new(len, 1.6, 1.6), cf * CFrame.new(len / 2, 0, 0), VEIN_LIME, nil, Enum.PartType.Cylinder)
 				piece.CanCollide = false
 				cf = cf * CFrame.new(len - 0.5, 0, 0) * CFrame.Angles(0, bend, 0)
 			end
@@ -140,7 +148,7 @@ local function buildSkullWall(world)
 	for i = 1, segments do
 		local a = (i - 0.5) / segments * math.pi * 2
 		local pos = Vector3.new(math.sin(a) * r, 40, math.cos(a) * r)
-		makePart(f, "SkullSegment", Vector3.new(width, 80, 6), CFrame.lookAt(pos, Vector3.new(0, 40, 0)), BONE)
+		makePart(f, "SkullSegment", Vector3.new(width, 80, 6), CFrame.lookAt(pos, Vector3.new(0, 40, 0)), Color3.fromRGB(60, 48, 78))
 	end
 	for _, side in ipairs({ -1, 1 }) do
 		local pos = Vector3.new(side * 45, 52, -r + 2)
@@ -228,33 +236,37 @@ local function buildLobe(parent, index)
 	local base = WorldBuilder.lobeCFrame(index)
 	local size = WorldBuilder.LOBE_SIZE
 	local h2 = WorldBuilder.FLOOR2_HEIGHT
-	lobe.PrimaryPart = makePart(lobe, "Floor1", Vector3.new(size.X, 1, size.Z), base * CFrame.new(0, 0.5, 0), BRAIN_PINK)
-	makePart(lobe, "GooEdge", Vector3.new(size.X + 1, 0.6, 1.2), base * CFrame.new(0, 0.4, -size.Z / 2), GOO, Enum.Material.Neon):SetAttribute("RemGlow", true)
-	makePart(lobe, "Floor2", Vector3.new(size.X, 1, 15), base * CFrame.new(0, h2, 8), BRAIN_PINK)
-	makePart(lobe, "Floor2Edge", Vector3.new(size.X, 0.6, 0.8), base * CFrame.new(0, h2 + 0.6, 0.6), GOO, Enum.Material.Neon)
-	for _, x in ipairs({ -19, 19 }) do
-		makePart(lobe, "Pillar", Vector3.new(2, h2, 2), base * CFrame.new(x, h2 / 2, 1.5), FOLD)
+	local accent = WorldBuilder.LOBE_ACCENTS[index]
+	local half = size.X / 2
+	lobe.PrimaryPart = makePart(lobe, "Floor1", Vector3.new(size.X, 1, size.Z), base * CFrame.new(0, 0.5, 0), LOBE_DARK)
+	makePart(lobe, "GooEdge", Vector3.new(size.X + 1, 0.6, 1.2), base * CFrame.new(0, 0.4, -size.Z / 2), accent, Enum.Material.Neon)
+	makePart(lobe, "Floor2", Vector3.new(size.X, 1, 15), base * CFrame.new(0, h2, 8), LOBE_DARK)
+	makePart(lobe, "Floor2Edge", Vector3.new(size.X, 0.6, 0.8), base * CFrame.new(0, h2 + 0.6, 0.6), accent, Enum.Material.Neon)
+	for _, x in ipairs({ -half + 1, half - 1 }) do
+		makePart(lobe, "Pillar", Vector3.new(2, h2, 2), base * CFrame.new(x, h2 / 2, 1.5), accent)
+		makePart(lobe, "SideRail", Vector3.new(0.6, 0.6, size.Z), base * CFrame.new(x, 1.3, 0), accent, Enum.Material.Neon).CanCollide = false
 	end
-	makePart(lobe, "BackWall", Vector3.new(size.X, h2 + 8, 1), base * CFrame.new(0, (h2 + 8) / 2, 15.5), FOLD)
+	makePart(lobe, "BackWall", Vector3.new(size.X, h2 + 8, 1), base * CFrame.new(0, (h2 + 8) / 2, 15.5), WALL_DARK)
 	local ramp = Instance.new("WedgePart")
 	ramp.Name = "Ramp"
 	ramp.Anchored = true
 	ramp.Size = Vector3.new(6, h2, 22)
-	ramp.CFrame = base * CFrame.new(23, h2 / 2, 4) * CFrame.Angles(0, math.pi, 0)
-	ramp.Color = FOLD
+	ramp.CFrame = base * CFrame.new(half + 3, h2 / 2, 4) * CFrame.Angles(0, math.pi, 0)
+	ramp.Color = accent
 	ramp.Material = Enum.Material.SmoothPlastic
 	ramp.Parent = lobe
-	makePart(lobe, "RampLanding", Vector3.new(4, 1, 15), base * CFrame.new(21, h2, 8), BRAIN_PINK)
+	makePart(lobe, "RampLanding", Vector3.new(4, 1, 15), base * CFrame.new(half + 1, h2, 8), LOBE_DARK)
 	local podiums = folder(lobe, "Podiums")
 	for slot, local_cf in ipairs(WorldBuilder.podiumLocalCFrames()) do
 		local cf = base * local_cf
-		local podium = makePart(podiums, "Podium" .. slot, Vector3.new(1.6, 5, 5), cf * CFrame.new(0, 1.8, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(110, 25, 75), nil, Enum.PartType.Cylinder)
+		local podium = makePart(podiums, "Podium" .. slot, Vector3.new(1.6, 7, 7), cf * CFrame.new(0, 1.8, 0) * CFrame.Angles(0, 0, math.pi / 2), accent, nil, Enum.PartType.Cylinder)
 		podium:SetAttribute("Slot", slot)
-		local top = makePart(podiums, "PodiumTop" .. slot, Vector3.new(0.4, 5.4, 5.4), cf * CFrame.new(0, 2.7, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(255, 240, 220), Enum.Material.SmoothPlastic, Enum.PartType.Cylinder)
+		local top = makePart(podiums, "PodiumTop" .. slot, Vector3.new(0.4, 7.2, 7.2), cf * CFrame.new(0, 2.75, 0) * CFrame.Angles(0, 0, math.pi / 2), Color3.fromRGB(235, 235, 255), Enum.Material.SmoothPlastic, Enum.PartType.Cylinder)
 		top.CanCollide = false
+		makePart(podiums, "PodiumRim" .. slot, Vector3.new(0.3, 7.8, 7.8), cf * CFrame.new(0, 2.65, 0) * CFrame.Angles(0, 0, math.pi / 2), accent, Enum.Material.Neon, Enum.PartType.Cylinder).CanCollide = false
 	end
 	local sign = makePart(lobe, "LobeSign", Vector3.new(24, 5, 0.6), base * CFrame.new(0, h2 + 5, 15), Color3.fromRGB(30, 0, 40))
-	local label = addSurfaceText(sign, Enum.NormalId.Front, "LOBE " .. index .. " · EMPTY", Color3.fromRGB(255, 255, 255), FOLD)
+	local label = addSurfaceText(sign, Enum.NormalId.Front, "LOBE " .. index .. " · EMPTY", accent, Color3.new(0, 0, 0))
 	label.Name = "SignText"
 	local collect = makePart(lobe, "CollectPad", Vector3.new(6, 0.4, 4), base * CFrame.new(-12, 1.1, -13), GOO, Enum.Material.Neon)
 	collect.CanCollide = false
@@ -343,18 +355,97 @@ local function buildSubconsciousGate(world)
 	end
 end
 
+local MEME_SIGNS = {
+	{ "SKIBIDI ZONE", Vector3.new(0, 18, -78) }, { "SIGMA GRINDSET", Vector3.new(0, 16, 0) },
+	{ "OHIO", Vector3.new(-94, 42, -15) }, { "+1000 AURA", Vector3.new(94, 42, -15) },
+	{ "RIZZ", Vector3.new(-62, 30, 62) }, { "NO CAP", Vector3.new(62, 30, 62) },
+	{ "BRAIN ROT 100%", Vector3.new(-150, 50, -95) }, { "67", Vector3.new(150, 50, -95) },
+	{ "GYATT-FREE ZONE", Vector3.new(-140, 40, 80) }, { "TUNG TUNG TUNG", Vector3.new(140, 40, 80) },
+	{ "BOMBARDIRO", Vector3.new(-55, 52, -128) }, { "CERTIFIED BRAINROT", Vector3.new(55, 52, -128) },
+}
+local MEME_COLORS = {
+	Color3.fromRGB(255, 230, 40), Color3.fromRGB(0, 230, 255), Color3.fromRGB(130, 255, 60), Color3.fromRGB(255, 80, 190),
+	Color3.fromRGB(255, 140, 30), Color3.fromRGB(255, 255, 255),
+}
+local MEME_EMOJI = {
+	{ "💀", Vector3.new(-26, 26, -92) }, { "🧠", Vector3.new(26, 30, -40) }, { "🗿", Vector3.new(-24, 24, 30) },
+	{ "🔥", Vector3.new(28, 22, 40) }, { "😭", Vector3.new(-94, 30, 52) }, { "🤯", Vector3.new(94, 30, 52) },
+	{ "💀", Vector3.new(120, 34, -80) }, { "🗿", Vector3.new(-120, 34, -80) },
+}
+
+-- Floating meme signs and emoji face the plaza camera side; parts with a Bob attribute float on the client.
+local function buildMemeLayer(world)
+	local f = folder(world, "MemeLayer")
+	local facing = Vector3.new(0, 20, 150)
+	for i, sign in ipairs(MEME_SIGNS) do
+		local text, pos = sign[1], sign[2]
+		local part = makePart(f, "MemeSign", Vector3.new(6 + #text * 3.4, 10, 0.2), CFrame.lookAt(pos, facing) * CFrame.Angles(0, 0, (i % 2 == 0 and 1 or -1) * 0.1), Color3.new(0, 0, 0))
+		part.Transparency, part.CanCollide, part.CanQuery = 1, false, false
+		part:SetAttribute("Bob", i)
+		for _, face in ipairs({ Enum.NormalId.Front, Enum.NormalId.Back }) do
+			local label = addSurfaceText(part, face, text, MEME_COLORS[i % #MEME_COLORS + 1], Color3.new(0, 0, 0), 20)
+			label.Font = Enum.Font.LuckiestGuy
+			local stroke = Instance.new("UIStroke")
+			stroke.Thickness = 6
+			stroke.Parent = label
+		end
+	end
+	for i, e in ipairs(MEME_EMOJI) do
+		local anchor = makePart(f, "MemeEmoji", Vector3.new(1, 1, 1), CFrame.new(e[2]), Color3.new(0, 0, 0))
+		anchor.Transparency, anchor.CanCollide, anchor.CanQuery = 1, false, false
+		anchor:SetAttribute("Bob", i * 1.7)
+		local gui = Instance.new("BillboardGui")
+		gui.Size = UDim2.fromScale(12, 12)
+		gui.LightInfluence = 0
+		gui.Parent = anchor
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.fromScale(1, 1)
+		label.BackgroundTransparency = 1
+		label.TextScaled = true
+		label.Text = e[1]
+		label.Parent = gui
+	end
+	for _, side in ipairs({ -1, 1 }) do
+		for _, z in ipairs({ -45, 15 }) do
+			for k, x in ipairs({ 44.5, 49 }) do
+				for _, arm in ipairs({ -1, 1 }) do
+					local cf = CFrame.new(side * x, 0.2, z) * CFrame.Angles(0, side * arm * math.pi / 4, 0) * CFrame.new(0, 0, -arm * 1.6)
+					makePart(f, "Chevron", Vector3.new(1.2, 0.2, 4.4), cf, k == 1 and Color3.fromRGB(255, 230, 40) or VEIN_LIME, Enum.Material.Neon).CanCollide = false
+				end
+			end
+		end
+	end
+	local rng = Random.new(67)
+	for i = 1, 10 do
+		local pos = Vector3.new(rng:NextNumber(-28, 28), 0.1, rng:NextNumber(-95, 45))
+		local d = rng:NextNumber(5, 10)
+		makePart(f, "GooPuddle", Vector3.new(0.3, d, d * 0.8), CFrame.new(pos) * CFrame.Angles(0, rng:NextNumber(0, 6), math.pi / 2), GOO, Enum.Material.Neon, Enum.PartType.Cylinder).CanCollide = false
+	end
+	for i = 1, 8 do
+		local pos = Vector3.new(rng:NextNumber(-30, 30), 0, rng:NextNumber(-95, 45))
+		local h = rng:NextNumber(4, 8)
+		makePart(f, "SparkStalk", Vector3.new(0.4, h, 0.4), CFrame.new(pos + Vector3.new(0, h / 2, 0)), NERVE).CanCollide = false
+		local spark = makePart(f, "NeuronSpark", Vector3.new(1.8, 1.8, 1.8), CFrame.new(pos + Vector3.new(0, h + 0.6, 0)), NERVE, Enum.Material.Neon, Enum.PartType.Ball)
+		spark.CanCollide = false
+		local s = Instance.new("Sparkles")
+		s.SparkleColor = Color3.fromRGB(200, 255, 255)
+		s.Parent = spark
+		if i <= 3 then addLight(spark, NERVE, 14, 0.8) end
+	end
+end
+
 function WorldBuilder.applyLighting()
 	local Lighting = game:GetService("Lighting")
 	for _, c in ipairs(Lighting:GetChildren()) do c:Destroy() end
-	Lighting.Ambient = Color3.fromRGB(70, 30, 60)
-	Lighting.OutdoorAmbient = Color3.fromRGB(120, 60, 110)
+	Lighting.Ambient = Color3.fromRGB(60, 40, 80)
+	Lighting.OutdoorAmbient = Color3.fromRGB(95, 80, 130)
 	Lighting.Brightness = 2
 	Lighting.ClockTime = 3 + 7 / 60
 	Lighting.GlobalShadows = true
 	local atmosphere = Instance.new("Atmosphere")
 	atmosphere.Density = 0.28
-	atmosphere.Color = Color3.fromRGB(120, 20, 90)
-	atmosphere.Decay = Color3.fromRGB(60, 8, 50)
+	atmosphere.Color = Color3.fromRGB(90, 30, 140)
+	atmosphere.Decay = Color3.fromRGB(40, 15, 70)
 	atmosphere.Haze = 0
 	atmosphere.Parent = Lighting
 	local bloom = Instance.new("BloomEffect")
@@ -370,7 +461,7 @@ function WorldBuilder.build()
 	if old then old:Destroy() end
 	local world = Instance.new("Folder")
 	world.Name = "BrainWorld"
-	for _, step in ipairs({ buildBrainFloor, buildSkullWall, buildMemeLobe, buildSynapseBelt, buildLobes, buildPlaza, buildProductivityHQ, buildSubconsciousGate }) do
+	for _, step in ipairs({ buildBrainFloor, buildSkullWall, buildMemeLobe, buildSynapseBelt, buildLobes, buildPlaza, buildProductivityHQ, buildSubconsciousGate, buildMemeLayer }) do
 		step(world)
 		task.wait()
 	end

@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 5, 07:33 UTC. Studio place 115061750567662 saved to Roblox (version 44). All src/ files match Studio (checksums).
+Last update: session 6, 07:48 UTC. Studio place 115061750567662 saved to Roblox (version 45). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -34,9 +34,17 @@ Last update: session 5, 07:33 UTC. Studio place 115061750567662 saved to Roblox 
    - README: Blender, catch card, event list fixed, U and R keys.
    - Test tip: `PlaytestControls:Invoke("LobeService", "add", player, {id = n})` fills your Lobe (player Instances pass fine); `Invoke("MemeBlender", "blend", player)` runs a blend. `debugFill` needs a live lobe table, so it does NOT work through the hook.
 
+7. Session 6 Brainrot vibe pass (plan "PRIORITY NOW", all 6 items done, synced, world rebuilt in Edit, playtest OK, no errors):
+   - Item 1 character scale: `BrainrotModelKit.displayScale(rarity) = 2.2 * sqrt(rarity.scale)` (Common 2.2x, Fully Rotted 3.4x). Tag 25 % smaller. Lobes widened to 48 (podium columns ±20/±10/0), FLOOR2_HEIGHT 18 (was 14), floor-2 rows z 4.5 / 11.5. Podiums 7 wide. MemeBlender jar scale 0.25 (was 0.55).
+   - Item 2 auras: Neon AuraDisc in rarity color under every brainrot, MutationRing (mutation color) under it, sparkle ParticleEmitter Rare+ (rate 3 x tier), Mythic+ thin LightBeam from feet to head only. Old AuraRing and Sparkles extras removed.
+   - Item 3 colors: floor (40,10,60), FoldRidge veins lime (130,255,80) and thinner, skull wall (60,48,78), Lobe floors (35,15,50), back wall (22,8,32). `WorldBuilder.LOBE_ACCENTS` (8 colors) on GooEdge, Floor2Edge, pillars, new SideRails, ramp, podium bodies, PodiumRim (Neon), sign text. Podium top is white SmoothPlastic (white Neon blew out the frame).
+   - Items 4 and 6 meme layer: `buildMemeLayer` in WorldBuilder, folder `BrainWorld.MemeLayer`: 12 floating LuckiestGuy signs (two-sided, face the plaza), 8 emoji billboards, yellow/lime floor chevrons from the belt to the 4 inner Lobes, 10 goo puddles and 8 neuron sparks inside the belt loop. ClientMain bobs every MemeLayer part with a `Bob` attribute (RenderStepped, client only).
+   - Item 5 lighting: Atmosphere Color (90,30,140), Decay (40,15,70), Ambient (60,40,80), OutdoorAmbient (95,80,130).
+   - Acceptance capture from (-22,36,30) looking at (-72,4,-42): characters lead, 5+ hues, OHIO / BRAIN ROT 100% / BOMBARDIRO readable, loop center filled.
+
 ## Next step
 
-1. Optional Tier 2: Thought Bubbles or Most Rotted board (plan Scope tiers). Brain Rot fills fast in play (Fully Rotted in about 2 min with 3 brainrots); fine, but set rot right before captures (lesson 20).
+1. Vibe pass is done; do not redo it. Optional Tier 2: Thought Bubbles or Most Rotted board (plan Scope tiers). Set rot right before captures (lesson 20). Check the Touch Grass wall and the Mind Block field still fit the wider Lobes (48) and the higher floor 2 (18).
 2. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan; shot 1 can now show a held catch card), then game.rbxl, thumbnail, README.
 3. For shot 1 the Touch Grass wall was not checked in a capture after the color change: check it in the shot 2 setup.
 

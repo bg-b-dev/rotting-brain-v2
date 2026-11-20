@@ -312,3 +312,18 @@ task.spawn(function()
 		task.wait(0.5)
 	end
 end)
+
+local memeLayer = workspace:WaitForChild("BrainWorld"):WaitForChild("MemeLayer", 10)
+if memeLayer then
+	local floaters = {}
+	for _, part in ipairs(memeLayer:GetChildren()) do
+		if part:GetAttribute("Bob") then floaters[part] = part.CFrame end
+	end
+	RunService.RenderStepped:Connect(function()
+		local t = os.clock()
+		for part, base in pairs(floaters) do
+			local phase = part:GetAttribute("Bob")
+			part.CFrame = base * CFrame.new(0, math.sin(t * 1.2 + phase) * 1.5, 0) * CFrame.Angles(0, math.sin(t * 0.5 + phase) * 0.12, 0)
+		end
+	end)
+end
