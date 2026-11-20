@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 12, 12:23 UTC (a long gap in the session: Studio reconnected). Studio place 115061750567662 saved to Roblox (version 52). All src/ files match Studio (checksums).
+Last update: session 13, 12:58 UTC. Studio place 115061750567662 saved to Roblox (version 53). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -84,14 +84,17 @@ Last update: session 12, 12:23 UTC (a long gap in the session: Studio reconnecte
    - Quests: `PlayerData.QUESTS` (Steal 1 brainrot +500, Run 3 blends +5K, Survive Touch Grass +2K), `d.quests = {0,0,0}`, `PlayerData.quest(player, i)` from CarryService (steal placed), MemeBlender (blend done), EventService (Touch Grass end, players not hit). Snapshot field `quests`. `debugSet {quests = {1, 2, 0}}` works.
    - Capture note: UI pixel offsets render about 1.7x in the 1561x1080 capture. With 7 menu buttons at 48 tall the menu hit the action bar; 36 fits (not yet seen in a capture after the change).
 
+14. Session 13 plan PRIORITY NOW #5 A and B, then all 4 shots retaken (synced, playtest OK, no errors):
+   - A: title card "🧠 ROTTING BRAIN 🧠" at x 140 (clears the Roblox menu), 13 feature chips in 2 rows right of it (`CHIP_ROWS` in ClientMain, width by text length).
+   - B: Brainpedia header cards (📖 BRAINPEDIA · gold FOUND n/60 · green MY LOBE n/20 +🧠X/s · red X closes), each tile has a dark strip with the rarity name (rarity color) and +🧠X/s (green), green ON LOBE badge (from the player's own StealPrompt models), footer with 8 rarity chips and the 8 mutations with multipliers (RichText, mutation colors). Pedia 0.74 tall.
+   - Shots: 1-cover (player carries Mammut Midollone in front of Lobe 2, catch card), 2-touch-grass, 3-brainpedia 41/60, 4-steal (STOLEN! RUN HOME!, Mind Block ON). Committed and pushed.
+   - Capture script: `scratchpad/shot.sh out.jpg` crops the newest capture in tool-results; JPEG quality steps down to 38 (q 56 was still over 256 KiB).
+
 ## Next step
 
-TIMELINE: feature freeze (11:30) is past; shots were due 12:30, game.rbxl and thumbnail 12:45, submit by 13:45. No new features. The committed shots show the old HUD: retake the cover first (it is also the thumbnail), then 3 and 4, then 2, as time allows.
-
-1. Retake all 4 shots (plan #4 C, D, E). Same profile before each: `debugSet {found = 41 ids that include every id in the Lobe, lobeLevel = 4, rebirths = 2, cells = 4.8e6, quests = {1, 2, 0}}`. LobeService.add marks new ids as found, so set `found` AFTER filling the Lobe (session 12 test showed 47/60).
-2. Cover (D): the old cover camera (-22,31,-27) still gives tag soup (many big tags). Move the camera close to 6-8 brainrots (about 25-35 studs), player carrying one, catch card, quests and menu visible, a Lobe sign in frame. Maybe lower tag MaxDistance to 45. Check the crop at 768x480 and 253x158.
-3. Shot 2: grass wall fills half the frame. Shot 4: close camera on the thief, Mind Block glow, "STOLEN! RUN HOME!". Shot 3: Brainpedia at 41/60 (open: set the pedia frame Visible from the Client datamodel, then `PlayerData.push` from the Server so the tiles build).
-4. Commit the shots as one commit. Then: thumbnail upload (user), game.rbxl, README final check (L for Mind Block; mention quests, systems menu).
+SHOTS DONE at 12:58. The plan says: stop here. The user uploads the thumbnail (1-cover.jpg) and saves game.rbxl.
+Left for a later session only if the user asks: README final check (L for Mind Block, quests, systems menu, chips).
+Known small thing: the U button shows 🧠150 after `debugSet lobeLevel` (cost is not recomputed by debugSet). Only test data, not a game bug.
 
 ## Sync method (important)
 
