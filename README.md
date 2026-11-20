@@ -26,7 +26,7 @@ every second. Rival kids sneak into your Lobe to steal them, and you sneak into 
 | Key | Action |
 |---|---|
 | E | Buy, pick up, place, collect |
-| Q | Mind Block (shield your Lobe) |
+| L | Mind Block (shield your Lobe) |
 | F | Focus Slap |
 | B | Brainpedia |
 
