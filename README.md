@@ -21,6 +21,7 @@ every second. Rival kids sneak into your Lobe to steal them, and you sneak into 
 - The Brain Rot meter fills as you play. At 100% you are Fully Rotted and earn x3.
 - Meme Blender: put 3 brainrots of one rarity in, get 1 of the next rarity out, maybe mutated.
 - A "NEW BRAINROT!" catch card pops up for every first find.
+- Thought Bubbles: buy a Basic, Gold or Galaxy bubble at the plaza shop. It floats on a pad in front of your Lobe, counts down, then pops into a random brainrot.
 - Most Rotted board on the plaza: every Lobe owner ranked by Brain Cells and by Brainpedia count.
 - Brainpedia: all 60 brainrots on one board. Brain Wash to rebirth for a permanent boost.
 

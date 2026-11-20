@@ -1,6 +1,6 @@
 # HANDOFF
 
-Last update: session 9, 08:12 UTC. Studio place 115061750567662 saved to Roblox (version 48). All src/ files match Studio (checksums).
+Last update: session 10, 08:17 UTC. Studio place 115061750567662 saved to Roblox (version 49). All src/ files match Studio (checksums).
 
 ## Done
 
@@ -63,10 +63,16 @@ Last update: session 9, 08:12 UTC. Studio place 115061750567662 saved to Roblox 
    - Test: `PlaytestControls:Invoke("EventService", "start", "homeworkRaid")`. Good capture: camera (-35, 26, -30) look at (-90, 14, -70), about 11 s after the start.
    - README event line updated.
 
+11. Session 10 Thought Bubbles (Tier 2, synced, playtest OK, no errors):
+   - `ThoughtBubbles.luau` (new, init from ServerMain, in PlaytestControls): runtime shop "ThoughtBubbleShop" with 3 stands in front of the old GEAR kiosk (sign text now "💭 BUBBLES"), at PLAZA_CENTER + (-53, 0, -6 ± 5.5). Basic 2K / 30 s / Common-Rare, Gold 60K / 2 min / Rare-Legendary, Galaxy 2M / 5 min / Legendary-God; mutation 15/30/50 %.
+   - A bought bubble (glass ball, neon core, two puffs, pad disc, countdown billboard) floats on one of 2 pads at Lobe local (±14, 0, -19), between the Lobe front and the belt. Pop: particle burst, `LobeService.add` (catch card on first find), alert "💭 POP! ...", feed line. Lobe full: waits and shows "LOBE FULL!".
+   - Test: `Invoke("ThoughtBubbles", "speed", 10)` makes timers 10x faster; `Invoke("ThoughtBubbles", "buy", player, 1..3)` returns the pad or nil. Good captures: Lobe 2 pads from (-22, 16, -45) look at (-56, 7, -45); shop from (-34, 12, 106) look at (-56, 6, 106).
+   - README feature line added.
+
 ## Next step
 
-1. Vibe pass, Most Rotted board, bright look and the Pixie raid are done; do not redo them. Optional Tier 2 left: Thought Bubbles (design 10.5, needs a shop: keep it small, e.g. a plaza kiosk and 2 pads per Lobe). Shot 4 (steal) could show a pixie raid instead of a rival thief if that reads better. Set rot right before captures (lesson 20). Shot 2 can show the Most Rotted board.
-2. Feature freeze 11:30, screenshots by 12:30 (plan's Screenshot plan; shot 1 can now show a held catch card), then game.rbxl, thumbnail, README.
+1. Tier 2 left: pets only (skip unless it is cheap). Better use of time now: start the screenshots early (plan's Screenshot plan). Shot 1 can show a held catch card and a bubble pad; shot 4 (steal) could show a pixie raid instead of a rival thief; shot 2 can show the Most Rotted board. Set rot right before captures (lesson 20).
+2. Feature freeze 11:30, screenshots by 12:30, then game.rbxl, thumbnail, README.
 3. For shot 1 the Touch Grass wall was not checked in a capture after the color change: check it in the shot 2 setup.
 
 ## Sync method (important)
@@ -91,4 +97,4 @@ Last update: session 9, 08:12 UTC. Studio place 115061750567662 saved to Roblox 
 
 ## Studio state
 
-- Edit mode. ServerMain enabled. ClientMain LocalScript in StarterPlayerScripts. EventService and MemeBlender ModuleScripts in ServerScriptService.
+- Edit mode. ServerMain enabled. ClientMain LocalScript in StarterPlayerScripts. EventService, MemeBlender, MostRotted and ThoughtBubbles ModuleScripts in ServerScriptService.
